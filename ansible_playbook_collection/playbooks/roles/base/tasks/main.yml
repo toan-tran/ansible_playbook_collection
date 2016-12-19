@@ -1,0 +1,47 @@
+---
+# Base packages and services for CentOS
+
+- name: Install NTP
+  become: yes
+  yum: name=ntp
+  tags: ntp
+
+- name: Change Time Zone
+  become: yes
+  file: path=/etc/localtime state=link src=/usr/share/zoneinfo/{{ timezone }} force=yes
+  tags: ntp
+
+- name: Enable NTP
+  become: yes
+  service: name=ntpd state=started enabled=yes
+  tags: ntp
+
+- name: Install VIM & Screen
+  become: yes
+  yum: name={{ item }}
+  with_items:
+  - vim
+  - screen
+  tags: editor
+
+- name: Config VIM
+  become: yes
+  template: src=vimrc.j2 dest=/etc/vimrc
+  tags: editor
+
+- name: Config Screen
+  become: yes
+  template: src=screenrc.j2 dest=/etc/screenrc
+  tags: editor
+
+- name: Disable SELinux
+  become: yes
+  lineinfile: dest=/etc/selinux/config regexp="^SELINUX=" line="SELINUX=disabled"
+  notify: Restart vm 
+  tags: disable_security
+
+- name: Disable iptables
+  become: yes
+  service: name=iptables state=stopped enabled=no
+  notify: Restart vm 
+  tags: disable_security

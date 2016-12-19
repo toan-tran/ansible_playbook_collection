@@ -1,0 +1,2 @@
+kerberos_realm: OPENSTACKLOCAL
+kerberos_domain: openstacklocal

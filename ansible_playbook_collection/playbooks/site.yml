@@ -1,0 +1,7 @@
+---
+# Support Services for Phenix platform
+
+- include: os.yml
+- include: basesupport.yml
+- include: kerberos.yml
+- include: cloudera_scm.yml

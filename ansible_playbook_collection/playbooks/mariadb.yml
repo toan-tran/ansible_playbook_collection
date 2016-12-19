@@ -1,0 +1,9 @@
+---
+# Install MariaDB
+
+- hosts: mariadb
+  vars_files:
+    - "secrets/{{ deployment_name}}.yml"
+  roles:
+    - role: mariadb
+      tags: mariadb

@@ -1,0 +1,16 @@
+---
+# Install Kerberos KDC and clients
+
+- hosts: kerberos-kdc
+  roles:
+    - role: kerberos_kdc
+      tags:
+        - kerberos
+        - kerberos_kdc
+
+- hosts: kerberos-clients
+  roles:
+  - role: kerberos_client
+    tags:
+      - kerberos_client
+      - kerberos

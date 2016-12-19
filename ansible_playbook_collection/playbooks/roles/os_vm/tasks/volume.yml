@@ -1,0 +1,27 @@
+---
+
+- name: VM name
+  debug: var=vm_name
+
+- name: "Info {{ vm_name }}-vdb"
+  debug: var=item
+  with_items: "{{ hostvars[vm_name]['cloud_volumes'] }}"
+  when: "'cloud_volumes' in hostvars[vm_name]"
+
+- name: "Create {{ vm_name }}'s volumes"
+  os_volume:
+    display_name: "{{ vm_name }}-{{ item.device}}"
+    size: "{{ item.size }}"
+    volume_type: "{{ item.type | default(omit)}}"
+    state: present
+  with_items: "{{ hostvars[vm_name]['cloud_volumes'] }}"
+  when: "'cloud_volumes' in hostvars[vm_name]"
+
+- name: "Attach volumes to {{ vm_name }}"
+  os_server_volume:
+    server: "{{ vm_name }}"
+    volume: "{{vm_name}}-{{ item.device }}"
+    device: "/dev/{{ item.device }}"
+    state: present
+  with_items: "{{ hostvars[vm_name]['cloud_volumes'] }}"
+  when: "'cloud_volumes' in hostvars[vm_name]"

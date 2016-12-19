@@ -1,0 +1,28 @@
+---
+# Playbook for installing Cloudera Manager Server and Cloudera Manager Agent
+# Using mariadb as Cloudera Manager's database.
+# For using embedded Postgre, simply remove mariadb role and cloudera_external_database
+# variable
+
+- include: epel.yml
+
+- hosts: cdh
+  roles:
+  - role: cdh_base
+    tags: cdh,cdh-base
+ 
+- hosts: cdh-managers
+  vars_files:
+    - "secrets/{{deployment_name}}.yml"
+  roles:
+    - role: mariadb
+      tags: mariadb
+    - role: cdh_scm_manager
+      tags: cdh,cdh-manager
+
+- hosts: cdh-agents
+  vars_files:
+    - "secrets/{{deployment_name}}.yml"
+  roles:
+    - role: cdh_scm_agent
+      tags: cdh,cdh-agent

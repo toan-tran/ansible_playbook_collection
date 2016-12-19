@@ -1,0 +1,2 @@
+---
+password_root: "{{ vault_password_root_mariadb }}"

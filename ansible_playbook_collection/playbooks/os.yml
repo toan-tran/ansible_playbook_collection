@@ -1,0 +1,11 @@
+---
+# Create VM on OpenStack platform for Ansible inventory
+# Also create and attach volumes to the VM if necessary
+# NOTE: MUST have OpenStack credentials in environment variables
+# (e.g. sourcing your OpenStack credential file)
+
+- hosts: localhost
+  gather_facts: false
+  roles:
+    - role: os_vm
+      tags: os-vm

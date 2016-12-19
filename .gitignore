@@ -1,0 +1,5 @@
+*.hosts
+*.pyc
+inventory/
+secrets/
+*.log

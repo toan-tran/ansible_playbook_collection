@@ -1,0 +1,33 @@
+---
+
+- name: VM name
+  debug: var=vm_name
+
+- name: VM vars
+  debug: msg="{{ hostvars[vm_name]['cloud_security_groups'] }}"
+  tags: debug-vm
+
+- name: "Create port port-{{ vm_name }}"
+  os_port:
+    name: "port-{{ vm_name }}"
+    network: "{{ hostvars[vm_name]['cloud_network_id'] }}"
+    security_groups: "{{ hostvars[vm_name]['cloud_security_groups'] }}"
+    fixed_ips:
+      - ip_address: "{{ hostvars[vm_name]['ansible_host'] }}"
+
+- name: "Create VM {{ vm_name }}"
+  os_server:
+    name: "{{ hostvars[vm_name]['inventory_hostname'] }}"
+    image: "{{ hostvars[vm_name]['cloud_image_id'] }}"
+    key_name: "{{ hostvars[vm_name]['cloud_keypair_id'] }}"
+    timeout: 200
+    flavor: "{{ hostvars[vm_name]['cloud_flavor_id'] }}"
+    security_groups: "{{ hostvars[vm_name]['cloud_security_groups'] }}"
+    auto_ip: no
+    nics:
+      - port-name: "port-{{ vm_name }}"
+    state: present
+    meta:
+      ansible:deployment_name: "{{ hostvars[vm_name]['deployment_name'] }}"
+      ansible:groups: "{{ hostvars[vm_name]['group_names'] | join(',') }}"
+  tags: create-vm

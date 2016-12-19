@@ -1,0 +1,45 @@
+[epel]
+name=Extra Packages for Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
+{% if local_epel_repo_url is not defined %}
+#baseurl=http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/$basearch
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-{{ ansible_distribution_major_version }}&arch=$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+{% else %}
+baseurl={{ local_epel_repo_url }}
+enabled=1
+gpgcheck=0
+{% endif %}
+
+[epel-debuginfo]
+name=Extra Packages for Enterprise Linux {{ ansible_distribution_major_version }} - $basearch - Debug
+{% if local_epel_debuginfo_repo_url is not defined %}
+#baseurl=http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/$basearch/debug
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-debug-{{ ansible_distribution_major_version }}&arch=$basearch
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+gpgcheck=1
+{% else %}
+baseurl={{ local_epel_debuginfo_repo_url }}
+enabled=1
+gpgcheck=0
+{% endif %}
+
+[epel-source]
+name=Extra Packages for Enterprise Linux {{ ansible_distribution_major_version }} - $basearch - Source
+{% if local_epel_source_repo_url is not defined %}
+#baseurl=http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/SRPMS
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-source-{{ ansible_distribution_major_version }}&arch=$basearch
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+gpgcheck=1
+{% else %}
+baseurl={{ local_epel_source_repo_url }}
+enabled=1
+gpgcheck=0
+{% endif %}
+

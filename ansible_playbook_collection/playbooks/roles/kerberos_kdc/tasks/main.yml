@@ -1,0 +1,19 @@
+---
+# Install Kerberos on CentOS
+
+- name: Install Kerberos packages
+  yum: name={{ item }} state=present
+  with_items:
+  - krb5-libs
+  - krb5-server
+  - krb5-workstation
+  - krb5-auth-dialog
+
+- name: Add KBR5 config
+  template: src=krb5.conf.j2 dest=/etc/krb5.conf
+
+- name: Add KDC config
+  template: src=kdc.conf.j2 dest=/var/kerberos/krb5kdc/kdc.conf mod=0600
+
+- name: Add KDC ACL file
+  template: src=kadm5.acl.j2 dest=/var/kerberos/krb5kdc/kadm5.acl owner=root group=root mod=0600

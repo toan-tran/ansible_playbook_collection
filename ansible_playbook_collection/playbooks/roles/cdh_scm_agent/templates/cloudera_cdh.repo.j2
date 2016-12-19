@@ -1,0 +1,11 @@
+[cloudera-cdh5]
+# Packages for Cloudera's Distribution for Hadoop, Version 5, on RedHat or CentOS {{ ansible_distribution_major_version }} x86_64
+name=Cloudera's Distribution for Hadoop, Version 5
+{% if local_cloudera_cdh_repo_url is not defined %}
+baseurl=https://archive.cloudera.com/cdh5/redhat/$releasever/x86_64/cdh/5/
+gpgkey =https://archive.cloudera.com/cdh5/redhat/$releasever/x86_64/cdh/RPM-GPG-KEY-cloudera    
+gpgcheck = 1
+{% else %}
+baseurl={{ local_cloudera_cdh_repo_url }}
+gpgcheck = 0
+{% endif %}

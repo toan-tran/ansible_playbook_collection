@@ -1,0 +1,15 @@
+127.0.0.1  localhost
+
+{% for host in groups['all'] %}
+{% if domain_name is defined %}
+{{ hostvars[host]['ansible_host'] }}  {{ host }}.{{ domain_name }} {{ host }}
+{% else %}
+{{ hostvars[host]['ansible_host'] }} {{ host }}
+{% endif %}
+{% endfor %}
+
+{% if additional_hosts is defined %}
+{% for line in additional_hosts %}
+{{ line }}
+{% endfor %}
+{% endif %}

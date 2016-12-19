@@ -1,0 +1,13 @@
+---
+# Install and configure basic services
+
+- hosts: all
+  become: yes
+  roles:
+  - role: added_dns
+    tags: basesupport,added_dns
+  - role: base
+    tags: basesupport,base
+  - role: epel
+    tags: basesupport,epel
+

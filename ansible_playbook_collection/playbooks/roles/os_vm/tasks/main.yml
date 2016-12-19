@@ -1,0 +1,26 @@
+---
+
+- include: vm.yml
+  with_items: "{{ groups['all'] }}"
+  loop_control:
+    loop_var: vm_name
+  when:
+    - vm_name != 'localhost'
+  tags: create-vm
+
+- include: volume.yml
+  with_items: "{{ groups['all'] }}"
+  loop_control:
+    loop_var: vm_name
+  when:
+    - vm_name != 'localhost'
+    - "'cloud_volumes' in hostvars[vm_name]"
+  tags: create-volume
+
+- include: check_readiness.yml
+  with_items: "{{ groups['all'] }}"
+  loop_control:
+    loop_var: vm_name
+  when:
+    - vm_name != 'localhost'
+  tags: check-vm-readiness

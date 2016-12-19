@@ -1,0 +1,10 @@
+---
+
+- name: VM vars
+  debug: msg=" {{ vm_name }} - {{ hostvars[vm_name]['ansible_host'] }}"
+
+- name: Check VM ready
+  wait_for: host="{{ hostvars[vm_name]['ansible_host'] }}" port="{{ hostvars[vm_name]['ansible_ssh_port']|default(22) }}" state=started timeout=100
+
+- name: Report done
+  debug: msg="VM {{ vm_name }} is ready" 

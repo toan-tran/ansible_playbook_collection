@@ -1,0 +1,10 @@
+---
+# Add Official EPEL Repository to CentOS
+
+- name: Add EPEL Repository
+  become: yes
+  template: src=epel.repo.j2 dest=/etc/yum.repos.d/epel.repo
+
+- name: Clean all YUM
+  become: yes
+  shell: "yum clean all"

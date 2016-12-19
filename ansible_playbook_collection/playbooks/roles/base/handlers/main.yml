@@ -1,0 +1,6 @@
+---
+- name: Restart vm
+  become: yes
+  shell: reboot
+  tags: disable_security
+
