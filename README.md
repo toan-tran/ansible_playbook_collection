@@ -9,7 +9,8 @@ to be used on cloud, but they should run correctly on any platform.
 
 ## List of services / tasks
 
- - os_vm: Creating VMs on an OpenStack platform for the hosts
+ - os_vm: Creating VMs and attached volumes on an OpenStack platform for Ansible inventory
+ - os_mount_volume: Mounting volumes inside VMs for Ansible inventory
  - added_dns: Adding all hostnames in /etc/hosts of all hosts
  - base: Installing NTP, disabling security among others
  - epel: Declaring EPEL repository in YUM repo list

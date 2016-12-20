@@ -9,3 +9,8 @@
   roles:
     - role: os_vm
       tags: os-vm
+
+- hosts: all
+  roles:
+    - role: os_mount_volume
+      tags: os-mount-volume

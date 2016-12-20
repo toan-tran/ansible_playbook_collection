@@ -1,0 +1,28 @@
+---
+# Format and mount disks inside host
+# host must have 'cloud_volume' variable
+# cloud_volume:
+#   size: (optional)
+#   device: (imperative)
+#   format: (optional) if present, will format disk following the value
+#   mount_folder/: (optional) if present, will mount disk at mount_folder value
+
+- name: Show volumes
+  debug: var=cloud_volumes
+  tags: debug
+
+- name: Format disks
+  become: yes
+  filesystem: fstype="{{ item.format }}" dev="/dev/{{ item.device }}"
+  when: "'format' in {{ item }}"
+  with_items: "{{ cloud_volumes | default([]) }}"
+  tags: os-mount-volume-format
+
+- name: Mount disks
+  become: yes
+  mount: name="{{ item.mount_folder }}" src="/dev/{{ item.device }}" fstype="{{ item.format }}" state=mounted
+  when: 
+    - "'fstype' in {{ item }}"
+    - "'mount_folder' in {{ item }}"
+  with_items: "{{ cloud_volumes | default([]) }}"
+  tags: os-mount-volume-mount
