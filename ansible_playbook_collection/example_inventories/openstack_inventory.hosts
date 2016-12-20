@@ -1,0 +1,32 @@
+vm_a1            ansible_host=172.16.100.101 ansible_user=ubuntu  ansible_private_key_file=~/keys/testkey
+vm_a2            ansible_host=172.16.100.102 ansible_user=ubuntu  ansible_private_key_file=~/V05/testkey
+vm_b1            ansible_host=172.16.100.111 ansible_user=ubuntu  ansible_private_key_file=~/keys/testkey
+vm_c1            ansible_host=172.16.100.121 ansible_user=ubuntu  cloud_security_groups=test_group,ssh_group
+
+[all:vars]
+deployment_name=test_platform
+cloud_flavor_id=2
+cloud_image_id=289bbfac-71fe-49ef-af66-c71f9b730881
+cloud_keypair_id=testkey
+cloud_network_id=testnet
+cloud_security_groups='test_group'
+
+[os_group:children]
+group_a
+group_b
+
+[group_a:vars]
+cloud_volumes=[{'size':'20', 'device':'vdb', 'format': 'ext3', 'mount_folder': '/disk1'}, {'size':'10', 'device':'vdc', 'format': 'ext3', 'mount_folder': '/disk2'}]
+
+[group_b:vars]
+cloud_volumes=[{'size':'10', 'device':'vdb', 'type': 'volumes_ceph_ssd'}]
+
+[os_group]
+vm_c1
+
+[group_a]
+vm_a1
+vm_a2
+
+[group_b]
+vm_b1
