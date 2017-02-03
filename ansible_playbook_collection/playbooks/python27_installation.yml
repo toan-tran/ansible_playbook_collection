@@ -1,0 +1,5 @@
+---
+# Install Python2.7 if not existed
+- hosts: all
+  roles:
+    - role: python27
