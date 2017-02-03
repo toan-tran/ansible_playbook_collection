@@ -3,10 +3,6 @@
 - name: VM name
   debug: var=vm_name
 
-- name: VM vars
-  debug: msg="{{ hostvars[vm_name]['cloud_security_groups'] }}"
-  tags: debug-vm
-
 - name: "Create port port-{{ vm_name }}"
   os_port:
     name: "port-{{ vm_name }}"

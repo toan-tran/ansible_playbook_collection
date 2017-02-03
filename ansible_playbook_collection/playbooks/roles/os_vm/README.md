@@ -1,8 +1,18 @@
 # Ansible role for creating VMs with attached volumes on OpenStack for the inventory
 
+## DESCRIPTION
+
 This role will create the VMs for the inventory on OpenStack platform.
 
-For using this role, each host defined in the inventory must have following variables (defined as host_vars or group_vars):
+## REQUIREMENTS
+    - Python's shade module
+    - Openstack's credential is loaded in environment variables (e.g. source openrc.src)
+
+## USAGE
+
+This role should be executed in a machine with OpenStack's credential already loaded in environment variables, usually the localhost.
+
+For using this role, each host defined in the inventory must have following variables (defined in host_vars or group_vars):
 
   - ansible_host: host IP address
   - ansible_private_key_file: path to VM's SSH private key file. Its filename must be as same as name of the SSH key registered on the cloud.

@@ -19,7 +19,7 @@ the volumes themselves. Thus it is better to separated the two roles.
 ## How to use this role
 
 To use this role, admin must specify the volume description in cloud_volumes
-variable (defined as host_vars or group_vars) as same as os_vm role:
+variable (defined in host_vars or group_vars) as same as os_vm role:
 
   - cloud_volumes: (list of dict) If not defined, will ignore the host.
       - size: (used in os_vm role) size of volume in GB
