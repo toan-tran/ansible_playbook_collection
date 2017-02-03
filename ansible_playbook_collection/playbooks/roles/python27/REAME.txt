@@ -1,0 +1,14 @@
+# Install Python 2.7 on CentOS
+
+## Introduction
+
+This Ansible role will install Python 2.7 if not existed.
+
+This role is tested on CentOS 6. CentOS 7 is provided with Python 2.7 by default.
+
+In CentOS 6, python 2.6 is the default python installation. It is used by some of the most important services (e.g. YUM), thus cannot be removed.
+This role will install Python 2.7 on CentOS 6 along with Python 2.6 and enable it through the python2.7 command.
+
+## Requirement
+
+  - ansible >= 2.2 (using remote_src with unarchive module)

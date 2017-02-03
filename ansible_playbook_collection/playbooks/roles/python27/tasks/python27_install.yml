@@ -1,0 +1,37 @@
+---
+# Install Python2.7
+
+- name: Install the 'Development tools' package group and additional packages
+  become: yes
+  yum: name={{ item }}
+  with_items:
+    - "@Development tools"
+    - zlib-devel
+    - bzip2-devel
+    - openssl-devel
+    - ncurses-devel
+    - wget
+
+- name: Download Python 2.7 source code
+  get_url: url={{ python27_url }} dest=/tmp/python27.tgz validate_certs=no
+
+- name: Unzip Python2.7 source code
+  unarchive: src=/tmp/python27.tgz dest=/tmp remote_src=yes
+
+- name: Configure Python2.7
+  shell:
+    cd /tmp/{{ python27_folder }} && ./configure --prefix=/usr/local --enable-shared LDFLAGS="-Wl,--rpath=/usr/local/lib"
+
+- name: Make Python2.7
+  shell:
+    cd /tmp/{{ python27_folder }} && make
+
+- name: Install Python2.7
+  become: yes
+  shell:
+    cd /tmp/{{ python27_folder }} && make altinstall
+
+- name: Add python2.7 script
+  become: yes
+  file: path=/usr/bin/python2.7 state=link src=/usr/local/bin/python2.7 mode=755
+  tags: wip

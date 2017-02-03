@@ -1,0 +1,11 @@
+---
+- name: Check Python 2.7
+  command: which python2.7
+  register: py27_check
+  ignore_errors: yes
+
+- name: Show Python 2.7 test
+  debug: var=py27_check
+
+- include: python27_install.yml
+  when: "'failed' in py27_check"
