@@ -1,0 +1,6 @@
+---
+# Install Python 3
+
+- name: Install Python 3
+  become: yes
+  yum: name={{ python3_package_name }}

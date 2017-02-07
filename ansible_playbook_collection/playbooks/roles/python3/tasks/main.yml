@@ -1,0 +1,11 @@
+---
+- name: Check Python 3
+  command: which python3
+  register: py3_check
+  ignore_errors: yes
+
+- name: Show Python 3 test
+  debug: var=py3_check
+
+- include: python3_install.yml
+  when: "'failed' in py3_check"
