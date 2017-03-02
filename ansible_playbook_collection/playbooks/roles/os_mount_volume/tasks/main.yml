@@ -22,7 +22,7 @@
   become: yes
   mount: name="{{ item.mount_folder }}" src="/dev/{{ item.device }}" fstype="{{ item.format }}" state=mounted
   when: 
-    - "'fstype' in {{ item }}"
+    - "'format' in {{ item }}"
     - "'mount_folder' in {{ item }}"
   with_items: "{{ cloud_volumes | default([]) }}"
   tags: os-mount-volume-mount
