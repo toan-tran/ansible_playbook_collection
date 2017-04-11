@@ -3,8 +3,10 @@
 - hosts: all
   roles:
     - role: python27
+      tags: python27
 
 # Install Python3 if not existed
 - hosts: all
   roles:
     - role: python3
+      tags: python3
