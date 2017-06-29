@@ -1,0 +1,25 @@
+---
+# Base packages and services for CentOS
+
+- name: Install NTP
+  apt: name=ntp state=present update_cache=yes
+  tags: ntp
+
+- name: Change Time Zone
+  file: path=/etc/localtime state=link src=/usr/share/zoneinfo/{{ timezone }} force=yes
+  tags: ntp
+
+- name: Install VIM & Screen
+  apt: name={{ item }}
+  with_items:
+    - vim
+    - screen
+  tags: base-editor
+
+- name: Config VIM
+  template: src=vimrc.j2 dest=/etc/vim/vimrc
+  tags: base-editor
+
+- name: Config Screen
+  template: src=screenrc.j2 dest=/etc/screenrc
+  tags: base-editor

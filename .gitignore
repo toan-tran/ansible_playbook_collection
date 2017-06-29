@@ -1,4 +1,6 @@
 *.pyc
 inventory/
 secrets/
+group_vars/
 *.log
+*.retry

@@ -2,6 +2,14 @@
 # Install Cloudera's Service and Configuration Manager (SCM)
 # This playbook is executed as root
 
+- name: show deployment_name
+  debug: var=deployment_name
+  tags: debug
+
+- name: show cloudera_external_database
+  debug: var=cloudera_external_database
+  tags: debug
+
 - name: Set up YUM Cloudera repo
   become: yes
   template: src=cloudera_manager.repo.j2 dest=/etc/yum.repos.d/cloudera_manager.repo
@@ -57,11 +65,16 @@
   copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
   when: cloudera_external_database is defined
 
-- name: Configure external database for Cloudera Manager
+- name: Add MySQL JDBC connector
   become: yes
-  command: "/usr/share/cmf/schema/scm_prepare_database.sh -h {{cloudera_external_database.host}} -u {{cloudera_external_database.root_user}} -p{{cloudera_external_database.root_password}} --scm-host {{ansible_hostname}} {{cloudera_external_database.type}} {{cloudera_external_database.cloudera_db}} {{cloudera_external_database.cloudera_user}} {{cloudera_external_database.cloudera_pwd}}"
-  ignore_errors: yes
+  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
   when: cloudera_external_database is defined
+
+- name: Update Cloudera Manager DB configuration
+  become: yes
+  template: src=db.properties.j2 dest=/etc/cloudera-scm-server/db.properties
+  when: cloudera_external_database is defined
+  tags: cdh-scm-manager-config
 
 - name: Start Embedded Cloudera Manager Database
   become: yes
@@ -74,7 +87,9 @@
 - name: Start Cloudera Manager
   become: yes
   service: name=cloudera-scm-server state=started
+  tags: cdh-scm-manager-config
 
 - name: Check Cloudera Manager port
   wait_for: port=7180 delay=10 timeout=60
   run_once: true
+  tags: cdh-scm-manager-config

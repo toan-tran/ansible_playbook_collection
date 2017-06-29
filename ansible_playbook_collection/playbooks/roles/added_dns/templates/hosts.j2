@@ -3,6 +3,8 @@
 {% for host in groups['all'] %}
 {% if domain_name is defined %}
 {{ hostvars[host]['ansible_host'] }}  {{ host }}.{{ domain_name }} {{ host }}
+{% elif kerberos_domain is defined %}
+{{ hostvars[host]['ansible_host'] }}  {{ host }}.{{ kerberos_domain }} {{ host }}
 {% else %}
 {{ hostvars[host]['ansible_host'] }} {{ host }}
 {% endif %}

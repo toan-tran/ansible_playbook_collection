@@ -2,6 +2,7 @@
 
 - name: VM name
   debug: var=vm_name
+  tags: os-vm-debug
 
 - name: "Create port port-{{ vm_name }}"
   os_port:
@@ -28,4 +29,5 @@
       ansible:ansible_private_key_file: "{{ hostvars[vm_name]['cloud_keypair_id'] }}"
       ansible:deployment_name: "{{ hostvars[vm_name]['deployment_name'] }}"
       ansible:groups: "{{ hostvars[vm_name]['group_names'] | join(',') }}"
+    userdata: "{{ hostvars[vm_name]['cloud_vm_userdata'] | default('') }}"
   tags: create-vm

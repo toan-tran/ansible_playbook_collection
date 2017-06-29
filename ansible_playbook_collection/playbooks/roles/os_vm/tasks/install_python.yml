@@ -1,0 +1,20 @@
+---
+
+- name: VM vars
+  debug: msg=" {{ vm_name }} - {{ hostvars[vm_name]['ansible_host'] }}"
+
+- name: Install python with APT
+  become: yes
+  raw: "apt-get update && apt-get install -y python"
+  delegate_to: "{{ vm_name }}"
+  ignore_errors: yes
+
+- name: Install python with YUM
+  become: yes
+  raw: "yum install -y python"
+  delegate_to: "{{ vm_name }}"
+  ignore_errors: yes
+
+- name: Check python
+  shell: "which python"
+  delegate_to: "{{ vm_name }}"

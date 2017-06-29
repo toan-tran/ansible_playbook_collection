@@ -2,6 +2,7 @@
 # Install Kerberos on CentOS
 
 - name: Install Kerberos packages
+  become: yes
   yum: name={{ item }} state=present
   with_items:
   - krb5-libs
@@ -10,10 +11,51 @@
   - krb5-auth-dialog
 
 - name: Add KBR5 config
+  become: yes
   template: src=krb5.conf.j2 dest=/etc/krb5.conf
 
 - name: Add KDC config
-  template: src=kdc.conf.j2 dest=/var/kerberos/krb5kdc/kdc.conf mod=0600
+  become: yes
+  template: src=kdc.conf.j2 dest=/var/kerberos/krb5kdc/kdc.conf mode=0600
 
 - name: Add KDC ACL file
-  template: src=kadm5.acl.j2 dest=/var/kerberos/krb5kdc/kadm5.acl owner=root group=root mod=0600
+  become: yes
+  template: src=kadm5.acl.j2 dest=/var/kerberos/krb5kdc/kadm5.acl owner=root group=root mode=0600
+
+- name: Check Kerberos DB
+  stat: path=/var/kerberos/db_created
+  register: db_state
+
+- name: Delete /dev/random
+  become: yes
+  file: path=/dev/random state=absent
+  when: not krb_db_state.stat.exists
+
+- name: Use /dev/urandom instead of /dev/random
+  become: yes
+  file: path=/dev/random src=/dev/urandom state=link force=yes
+  when: not krb_db_state.stat.exists
+
+- name: Generate kerberos database
+  become: yes
+  shell: echo -e "{{ kerberos_master_password }}\n{{ kerberos_master_password: }}" | kdb5_util create -s; touch /var/kerberos/db_created
+  when: not krb_db_state.stat.exists
+
+- name: Restart KDC service
+  become: yes
+  service: name=krb5kdc state=restarted
+  when: not krb_db_state.stat.exists
+
+- name: Check Kerberos DB
+  stat: path=/var/kerberos/admin_created
+  register: krb_admin_state
+
+- name: Generate Kerberos admin
+  shell: echo -e "{{ kerberos_admin_password }}\n{{ kerberos_admin_password }}" | kadmin.local  -q "addprinc {{ keberos_admin_user }}/admin"; touch /var/kerberos/admin_created
+  when: not krb_admin_state.stat.exists
+
+- name: Restart KAdmin service
+  become: yes
+  service: name=kadmin state=restarted
+  when: not krb_admin_state.stat.exists
+

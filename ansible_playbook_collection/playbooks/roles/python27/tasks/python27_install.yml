@@ -34,4 +34,3 @@
 - name: Add python2.7 script
   become: yes
   file: path=/usr/bin/python2.7 state=link src=/usr/local/bin/python2.7 mode=755
-  tags: wip

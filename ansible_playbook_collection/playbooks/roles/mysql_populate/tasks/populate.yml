@@ -1,0 +1,45 @@
+---
+# Create database and users on local MySQL server
+
+- name: Install MySQL-python
+  become: yes
+  yum: name={{ item }} state=present
+  with_items:
+    - MySQL-python
+  run_once: true
+  when: ansible_os_family == 'RedHat'
+
+- name: Install python-mysqldb
+  become: yes
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - python-mysqldb
+  run_once: true
+  when: ansible_os_family == 'Debian'
+
+- name: mysql_items
+  debug: var=mysql_items
+
+- name: Create databases
+  mysql_db: login_user=root
+            login_password={{ root_password }}
+            login_port={{ mysql_port }}
+            name={{ item.database }}
+            state=present
+  with_items: "{{ mysql_items | default([]) }}"
+  ignore_errors: yes
+  run_once: true
+  tags: mysql-items
+
+- name: Create users
+  mysql_user: login_user=root
+              login_password="{{ root_password }}"
+              login_port={{ mysql_port }}
+              name="{{ item.user }}"
+              password="{{ item.password }}"
+              priv="{{ item.database }}.*:ALL"
+              host="{{ item.host }}"
+  with_items: "{{ mysql_items | default([]) }}"
+  ignore_errors: yes
+  run_once: true
+  tags: mysql-items

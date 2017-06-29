@@ -1,2 +1,2 @@
-kerberos_realm: OPENSTACKLOCAL
-kerberos_domain: openstacklocal
+kerberos_realm: NOVALOCAL
+kerberos_domain: novalocal

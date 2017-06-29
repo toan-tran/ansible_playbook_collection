@@ -15,8 +15,6 @@
   vars_files:
     - "secrets/{{deployment_name}}.yml"
   roles:
-    - role: mariadb
-      tags: mariadb
     - role: cdh_scm_manager
       tags: cdh,cdh-manager
 

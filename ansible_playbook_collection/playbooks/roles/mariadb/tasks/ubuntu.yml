@@ -1,0 +1,11 @@
+---
+# Install MariaDB on Debian / Ubuntu
+
+- name: Install MariaDB and tools
+  become: yes
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - mariadb-server
+    - python-mysqldb
+  run_once: true
+

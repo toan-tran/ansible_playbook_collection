@@ -2,12 +2,10 @@
 # Hostname of the CM server.
 {% if 'fqdn' in hostvars[groups["cdh-managers"][0]] %}
 server_host={{ hostvars[groups["cdh-managers"][0]]["fqdn"] }}
-{% else %}
-{% if kerberos_domain is defined %}
+{% elif kerberos_domain is defined %}
 server_host={{ groups["cdh-managers"][0] }}.{{ kerberos_domain }}
 {% else %}
 server_host={{ groups["cdh-managers"][0] }}
-{% endif %}
 {% endif %}
 
 # Port that the CM server is listening on.
@@ -30,6 +28,8 @@ server_port=7182
 # listening_hostname=
 {% if fqdn is defined %}
 listening_hostname={{ fqdn }}
+{% elif kerberos_domain is defined %}
+listening_hostname={{ inventory_hostname }}.{{ kerberos_domain }}
 {% endif %}
 
 # An alternate hostname to report as the hostname for this host in CM.
