@@ -1,95 +1,12 @@
 ---
-# Install Cloudera's Service and Configuration Manager (SCM)
-# This playbook is executed as root
 
-- name: show deployment_name
-  debug: var=deployment_name
-  tags: debug
+- include: ubuntu.yml
+  when: ansible_os_family == 'Debian'
+  tags: cloudera-scm-server-install
 
-- name: show cloudera_external_database
-  debug: var=cloudera_external_database
-  tags: debug
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+  tags: cloudera-scm-server-install
 
-- name: Set up YUM Cloudera repo
-  become: yes
-  template: src=cloudera_manager.repo.j2 dest=/etc/yum.repos.d/cloudera_manager.repo
-  tags: cdh-scm-base, cdh-scm-repo
-
-- name: Install psmisc as depedency
-  become: yes
-  yum: name=psmisc state=present
-  tags: cdh-scm-base
-
-- name: Install JDK for Cloudera SCM
-  become: yes
-  yum: name={{ java_package }} state=present
-  tags: cdh-scm-base
-
-- name: Copy UnlimitedJCEPolicy [1]
-  become: yes
-  copy: src=local_policy.jar dest=/etc/alternatives/jre_1.8.0/lib/security/
-  tags: cdh-scm-base
-
-- name: Copy UnlimitedJCEPolicy [2]
-  become: yes
-  copy: src=US_export_policy.jar dest=/etc/alternatives/jre_1.8.0/lib/security/
-  tags: cdh-scm-base
-
-- name: Create cloudera-scm user
-  become: yes
-  user: name=cloudera-scm state=present home=/opt/cloudera shell=/bin/bash
-  tags: cdh-scm-base
-
-- name: Install Cloudera Manager server
-  become: yes
-  yum: name={{ item }} state=present disable_gpg_check=yes
-  with_items:
-  - cloudera-manager-daemons
-  - cloudera-manager-server
-  #environment:
-  #    JAVA_HOME: /etc/alternative/jre
-  tags: cdh-scm-base
-
-- name: Update Cloudera SCM Manager default operation
-  become: yes
-  template: src=default_cloudera-scm-server.j2 dest=/etc/default/cloudera-scm-server
-  tags: cdh-scm-base
-
-- name: Install Embedded Cloudera Mananager Database
-  become: yes
-  yum: name=cloudera-manager-server-db-2 state=present disable_gpg_check=yes
-  when: cloudera_external_database is not defined
-
-- name: Add MySQL JDBC connector
-  become: yes
-  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
-  when: cloudera_external_database is defined
-
-- name: Add MySQL JDBC connector
-  become: yes
-  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
-  when: cloudera_external_database is defined
-
-- name: Update Cloudera Manager DB configuration
-  become: yes
-  template: src=db.properties.j2 dest=/etc/cloudera-scm-server/db.properties
-  when: cloudera_external_database is defined
-  tags: cdh-scm-manager-config
-
-- name: Start Embedded Cloudera Manager Database
-  become: yes
-  service: name=cloudera-scm-server-db state=started
-  when: cloudera_external_database is not defined
-
-- name: Pause 20'
-  pause: seconds=20
-
-- name: Start Cloudera Manager
-  become: yes
-  service: name=cloudera-scm-server state=started
-  tags: cdh-scm-manager-config
-
-- name: Check Cloudera Manager port
-  wait_for: port=7180 delay=10 timeout=60
-  run_once: true
-  tags: cdh-scm-manager-config
+- include: change_admin.yml
+  tags: cloudera-scm-change-admin

@@ -1,0 +1,8 @@
+- name: Update Cloudera admin password
+  uri:
+    url: http://localhost:7180/api/v16/users/admin
+    method: PUT
+    user: admin
+    password: admin
+    body_format: json
+    body: '{"password": "{{ cloudera_admin_password }}" }'

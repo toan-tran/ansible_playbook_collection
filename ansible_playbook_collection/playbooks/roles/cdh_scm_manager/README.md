@@ -1,13 +1,12 @@
 # Install Cloudera Manager on CentOS #
 
+
 ## Introduction ##
 
-This playbook will install Cloudera Manager 5.5.x on CentOS.
+This playbook will install Cloudera Manager 5.x on CentOS or Ubuntu.
 
 In conjunction with the Cloudera Manager Agent playbook, it forms a starting
 point for creating / managing a Cloudera Hadoop cluster.
-
-* IMPORTANT * This playbook is for Dev/Test platform.
 
 There are two options on databases for Cloudera Manager:
 
@@ -25,21 +24,30 @@ database whose informations are defined within this variable.
 cloudera_external_database:
    type: Database type (mysql / postgre / oracle)
    host: Database host name or IP
-   root_user: name of privileged user, 'root' for MySQL, 'postgre' for Postgre, '' for Oracle
-   root_password: password of the privileged user
    cloudera_db: name of the database used for Cloudera
    cloudera_user: user for Cloudera
    cloudera_pwd: passwod for Cloudera
 
+cloudera_external_database should be stored in an encrypted vars file.
+
+
+## Other variables ##
+
+vault_cloudera_admin_password: password for Cloudera Manager admin. Should be stored in an
+                               encrypted vars file.
+
+
 ## Notes on this playbook ##
 
- - Use OpenJDK 1.8.0 as default. To use another java package, declare as 'java_package'variable
+ - Uses OpenJDK 1.8.0 as default for CentOS. To use another java package, declare as 'java_package'variable
+   Debian family uses Oracle JDK 1.8
  - If local_cloudera_manager_repo_url is defined, uses it as Cloudera Manager repository URL,
    if not, use official Cloudera Manager repository
+
 
 ## Links ##
 
 Manual instruction for installing Cloudera Manager:
-  http://www.cloudera.com/documentation/enterprise/5-5-x/topics/installation_installation.html
-  http://www.cloudera.com/documentation/enterprise/5-5-x/topics/cm_ig_install_path_b.html
+  http://www.cloudera.com/documentation/enterprise/5-8-x/topics/installation_installation.html
+  http://www.cloudera.com/documentation/enterprise/5-8-x/topics/cm_ig_install_path_b.html
 

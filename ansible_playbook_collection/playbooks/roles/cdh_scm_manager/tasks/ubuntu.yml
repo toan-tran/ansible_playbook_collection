@@ -1,0 +1,94 @@
+---
+# Install Cloudera's Service and Configuration Manager (SCM) on Ubuntu system
+
+- name: Set up APT Cloudera repo
+  become: yes
+  template: src=cloudera_manager.list.j2 dest=/etc/apt/sources.list.d/cloudera_manager.list
+  tags: cdh-scm-base, cdh-scm-repo
+
+- name: Install useful packages
+  become: yes
+  package: name={{ item }}
+  with_items:
+    - python-software-properties
+
+- name: Add webupd8team APT Repository for Oracle Java
+  become: yes
+  apt_repository: repo='ppa:webupd8team/java'
+  tags: cdh-scm-base
+
+- name: Update APT cache
+  become: yes
+  apt: update_cache=yes
+  tags: cdh-scm-base
+
+- name: Accept Oracle Java 8 License
+  become: yes
+  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  tags: cdh-scm-base
+
+- name: Install Oracle Java 8
+  become: yes
+  apt: name={{item}} state=latest
+  with_items:
+    - oracle-java8-installer
+    - ca-certificates
+    - oracle-java8-set-default
+  tags: cdh-scm-base
+
+- name: Create cloudera-scm user
+  become: yes
+  user: name=cloudera-scm state=present home=/opt/cloudera shell=/bin/bash
+  tags: cdh-scm-base
+
+- name: Install Cloudera Manager server
+  become: yes
+  apt: name={{ item }} state=present allow_unauthenticated=yes
+  with_items:
+    - cloudera-manager-daemons
+    - cloudera-manager-server
+  tags: cdh-scm-base
+
+- name: Update Cloudera SCM Manager default operation
+  become: yes
+  template: src=default_cloudera-scm-server.j2 dest=/etc/default/cloudera-scm-server
+  tags: cdh-scm-base
+
+- name: Add MySQL JDBC connector
+  become: yes
+  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
+  when: cloudera_external_database is defined
+
+- name: Add MySQL JDBC connector
+  become: yes
+  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
+  when: cloudera_external_database is defined
+
+- name: Update Cloudera Manager DB configuration
+  become: yes
+  template: src=db.properties.j2 dest=/etc/cloudera-scm-server/db.properties
+  when: cloudera_external_database is defined
+  tags: cdh-scm-manager-config
+
+- name: Install Embedded Cloudera Mananager Database
+  become: yes
+  apt: name=cloudera-manager-server-db-2 state=present allow_unauthenticated=yes
+  when: cloudera_external_database is not defined
+
+- name: Start Embedded Cloudera Manager Database
+  become: yes
+  service: name=cloudera-scm-server-db state=started
+  when: cloudera_external_database is not defined
+
+- name: Pause 30'
+  pause: seconds=30
+  when: cloudera_external_database is not defined
+
+- name: Start Cloudera Manager
+  become: yes
+  service: name=cloudera-scm-server state=started
+  tags: cdh-scm-manager-config
+
+- name: Check Cloudera Manager port
+  wait_for: port=7180 delay=10 timeout=60
+  tags: cdh-scm-manager-config

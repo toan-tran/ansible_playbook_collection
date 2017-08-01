@@ -4,3 +4,4 @@ secrets/
 group_vars/
 *.log
 *.retry
+*.swp
