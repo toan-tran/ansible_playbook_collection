@@ -1,0 +1,14 @@
+---
+# Install OpenVPN on Debian / Ubuntu OS
+
+- name: Install packages
+  become: yes
+  yum: name={{ item }} update_cache=yes
+  with_items:
+    - openvpn
+    - easy-rsa
+    - unzip
+
+- name: Copy easy-rsa files to /usr/share/easy-rsa
+  shell: cp /usr/share/easy-rsa/*/* /usr/share/easy-rsa/
+

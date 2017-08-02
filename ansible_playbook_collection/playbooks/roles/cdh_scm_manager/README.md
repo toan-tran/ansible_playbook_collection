@@ -1,4 +1,4 @@
-# Install Cloudera Manager on CentOS #
+# Install Cloudera Manager #
 
 
 ## Introduction ##

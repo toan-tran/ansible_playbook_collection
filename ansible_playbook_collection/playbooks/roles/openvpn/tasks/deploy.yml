@@ -1,0 +1,20 @@
+---
+
+- include: install_ubuntu.yml
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- include: install_redhat.yml
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- include: setup_openvpn.yml
+  become: yes
+
+- include: post_install_ubuntu.yml
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- include: post_install_redhat.yml
+  become: yes
+  when: ansible_os_family == 'RedHat'

@@ -1,0 +1,21 @@
+openvpn_port: 1194
+openvpn_key_size: 1024
+openvpn_ca_expire: 3650
+openvpn_key_expire: 3650
+openvpn_key_name: "vpnserver"
+
+openvpn_key_country: "US"
+openvpn_key_province: "CA"
+openvpn_key_city: "SanFrancisco"
+openvpn_key_org: "Fort-Funston"
+openvpn_key_email: "me@myhost.mydomain"
+openvpn_key_ou: "MyOrganizationalUnit"
+
+openvpn_use_tls: True
+
+openvpn_protocol: udp
+openvpn_duplicate_cn: True
+openvpn_vpn_subnet: "10.8.0.0/24"
+openvpn_push_route: []
+
+openvpn_force_restart: False

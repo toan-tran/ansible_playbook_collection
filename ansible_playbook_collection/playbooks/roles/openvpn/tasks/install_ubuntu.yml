@@ -1,0 +1,10 @@
+---
+# Install OpenVPN on Debian / Ubuntu OS
+
+- name: Install packages
+  become: yes
+  apt: name={{ item }} update_cache=yes
+  with_items:
+    - openvpn
+    - easy-rsa
+    - unzip

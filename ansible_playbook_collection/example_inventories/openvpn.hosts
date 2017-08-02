@@ -1,0 +1,42 @@
+# Inventory for OpenVPN role test
+# Create a host with name test and assure that you can ssh into the host without password.
+# A simple way is to put config into ssh config
+# For instance, if I test-openvpn has IP 192.168.0.120 and I can ssh into it with user name
+# ubuntu and private key at ~/keys/test.pem, then add into /etc/hosts:
+# 192.168.0.120  test
+#
+# and add into ~/.ssh/config:
+# Host test
+#    StrictHostKeyChecking no
+#    User ubuntu
+#    IdentityFile ~/keys/test.pem
+#
+
+[openvpn:vars]
+
+# Information related to your organization
+openvpn_key_name="EasyRSA"
+openvpn_key_country="US"
+openvpn_key_province="CA"
+openvpn_key_city="SanFrancisco"
+openvpn_key_org="Fort-Funston"
+openvpn_key_email="me@myhost.mydomain"
+openvpn_key_ou="MyOrganizationalUnit"
+
+openvpn_protocol=tcp
+openvpn_key_size=2048
+openvpn_ca_expire=365
+openvpn_key_expire=365
+
+# Use TLS for more protection from DDOS attack
+openvpn_use_tls=True
+
+# If you don't want user to use a same credential on multiple devices
+openvpn_duplicate_cn=False
+
+# This route will be pushed to the clients. Normally you should add subnets on
+# the server's side that you want to reach through the VPN here
+openvpn_push_route=["192.168.110.0/24", "192.168.120.0/24"]
+
+[openvpn]
+test

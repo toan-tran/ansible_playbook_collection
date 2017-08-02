@@ -1,0 +1,93 @@
+---
+# Set up OpenVPN
+
+- name: Create Easy-RSA folders for openvpn
+  become: yes
+  file: path={{ item }} state=directory mode=700
+  with_items:
+    - "{{ openvpn_rsa_dir }}"
+    - "{{ openvpn_key_dir }}"
+  
+- name: "Copy easy-rsa scripts to {{ openvpn_rsa_dir }}"
+  become: yes
+  template: src={{ item }}.j2 dest={{ openvpn_rsa_dir }}/{{ item }} mode=755
+  with_items:
+    - vars
+    - clean-all.sh
+    - build-server.sh
+    - build-client.sh
+    - revoke-client.sh
+
+- name: Check VPN certificate
+  stat: path=/etc/openvpn/ca.crt
+  register: ca_check
+
+- block:
+  - name: Deleting all existing keys if existed
+    become: yes
+    shell: "{{ openvpn_rsa_dir }}/clean-all.sh"
+  
+  - name: Generate CA
+    become: yes
+    shell: "{{ openvpn_rsa_dir }}/build-server.sh"
+  
+  - name: Copy files to openvpn config folder
+    become: yes
+    copy: src={{ openvpn_key_dir }}/{{ item }} dest=/etc/openvpn/ remote_src=True
+    with_items:
+      - ca.crt
+      - "dh{{ openvpn_key_size }}.pem"
+      - "{{ openvpn_key_name }}.crt"
+  
+  - name: Copy keys to openvpn config folder
+    become: yes
+    copy: src={{ openvpn_key_dir }}/{{ item }} dest=/etc/openvpn/ remote_src=True mode=600
+    with_items:
+      - ca.key
+      - "{{ openvpn_key_name }}.key"
+  
+  when: not ca_check.stat.exists
+
+- name: Check TLS key
+  stat: path=/etc/openvpn/ta.key
+  register: ta_check
+  when: openvpn_use_tls
+
+- name: Create TLS key
+  become: yes
+  shell: "openvpn --genkey --secret /etc/openvpn/ta.key"
+  when:
+    - openvpn_use_tls
+    - not ta_check.stat.exists
+ 
+- name: Create openvpn log folder
+  become: yes
+  file: path=/var/log/openvpn state=directory
+    
+- name: Copy openvpn server config
+  become: yes
+  template: src=server.conf.j2 dest=/etc/openvpn/server.conf
+  register: openvpn_config
+
+- name: Check if using systemd
+  raw: which systemctl
+  register: systemd_check
+  ignore_errors: True
+
+- debug: msg="Systemd does not exist"
+  when: ("failed" in systemd_check) and systemd_check["failed"] 
+
+- debug: msg="Systemd exists"
+  when: ("failed" not in systemd_check) or (not systemd_check["failed"])
+
+- name: Restart OpenVPN with Upstart
+  service: name=openvpn state=restarted enabled=yes
+  when:
+    - ("failed" in systemd_check) and systemd_check["failed"]
+    - openvpn_config.changed or openvpn_force_restart
+
+- name: Restart OpenVPN with Systemd
+  service: name=openvpn@server state=restarted enabled=yes
+  when:
+    - ("failed" not in systemd_check) or (not systemd_check["failed"])
+    - openvpn_config.changed or openvpn_force_restart

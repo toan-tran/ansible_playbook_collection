@@ -1,0 +1,2 @@
+openvpn_rsa_dir: "/etc/openvpn/easy-rsa"
+openvpn_key_dir: "{{ openvpn_rsa_dir }}/keys"
