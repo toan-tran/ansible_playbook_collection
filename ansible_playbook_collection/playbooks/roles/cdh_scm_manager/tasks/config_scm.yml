@@ -1,0 +1,51 @@
+- block:
+    - name: Get Cloudera API version
+      uri:
+        url: "http://localhost:7180/api/version"
+        method: GET
+        user: admin
+        password: admin
+        return_content: yes
+      register: scm_api_version
+        
+    - name: Update Cloudera admin password
+      uri:
+        url: "http://localhost:7180/api/{{scm_api_version.content}}/users/admin"
+        method: PUT
+        user: admin
+        password: admin
+        body_format: json
+        body: '{"password": "{{ cloudera_admin_password }}" }'
+  rescue:
+    - name: Get Cloudera API version - Re-attempt
+      uri:
+        url: "http://localhost:7180/api/version"
+        method: GET
+        user: admin
+        password: "{{ cloudera_admin_password }}"
+        return_content: yes
+      register: scm_api_version
+  always:
+    - name: Show Cloudera Manager API version
+      debug: var=scm_api_version
+
+- name: Generate Cloudera Manager configuration file
+  template: src=scm.json.j2 dest=/tmp/scm.json
+  delegate_to: localhost
+
+- name: Update Cloudera Manger configuration
+  uri:
+    url: "http://localhost:7180/api/{{scm_api_version.content}}/cm/config"
+    method: PUT
+    user: admin
+    password: "{{ cloudera_admin_password }}"
+    body_format: json
+    body: "{{ lookup('file', '/tmp/scm.json') }}"
+    return_content: yes
+  register: update_scm_response
+
+- debug: var=update_scm_response
+
+- name: Delete Cloudera Manager configuration file
+  file: path=/tmp/scm.json state=absent
+  delegate_to: localhost

@@ -8,5 +8,5 @@
   when: ansible_os_family == 'RedHat'
   tags: cloudera-scm-server-install
 
-- include: change_admin.yml
-  tags: cloudera-scm-change-admin
+- include: config_scm.yml
+  tags: cloudera-scm-config-scm

@@ -1,1 +1,0 @@
-cloudera_admin_password: "{{ vault_cloudera_admin_password }}"

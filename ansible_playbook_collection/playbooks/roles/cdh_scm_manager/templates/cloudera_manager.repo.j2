@@ -1,11 +1,11 @@
 [cloudera-manager]
 # Packages for Cloudera Manager, Version 5, on RedHat or CentOS "{{ ansible_distribution_major_version }}" x86_64
 name=Cloudera Manager
-{% if local_cloudera_manager_repo_url is not defined %}
+{% if cloudera_manager_repository is not defined %}
 baseurl=https://archive.cloudera.com/cm5/redhat/$releasever/x86_64/cm/5/
 gpgkey =https://archive.cloudera.com/cm5/redhat/$releasever/x86_64/cm/RPM-GPG-KEY-cloudera
 gpgcheck = 1
 {% else %}
-baseurl="{{ local_cloudera_manager_repo_url }}"
+baseurl="{{ cloudera_manager_repository }}"
 gpgcheck = 0
 {% endif %}
