@@ -1,3 +1,10 @@
-# Packages for Cloudera Manager, Version 5, on Ubuntu {{ ansible_distribution_release }} x86_64
-deb [arch=amd64] http://archive.cloudera.com/cm5/ubuntu/{{ ansible_distribution_release }}/amd64/cm {{ ansible_distribution_release }}-cm5 contrib
-deb-src http://archive.cloudera.com/cm5/ubuntu/{{ ansible_distribution_release }}/amd64/cm {{ ansible_distribution_release }}-cm5 contrib
+# Packages for Cloudera Manager, on {{ ansible_distribution }} {{ ansible_distribution_release }} x86_64
+{% if cloudera_manager_repository is defined %}
+deb "{{ cloudera_manager_repository }}"
+{% elif cloudera_manager_version is defined %}
+deb [arch=amd64] http://archive.cloudera.com/cm{{cloudera_manager_version|first}}/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cm {{ ansible_distribution_release }}-cm{{cloudera_manager_version}} contrib
+deb-src http://archive.cloudera.com/cm{{cloudera_manager_version|first}}/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cm {{ ansible_distribution_release }}-cm{{cloudera_manager_version|first}} contrib
+{% else %}
+deb [arch=amd64] http://archive.cloudera.com/cm5/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cm {{ ansible_distribution_release }}-cm5 contrib
+deb-src http://archive.cloudera.com/cm5/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cm {{ ansible_distribution_release }}-cm5 contrib
+{% endif %}

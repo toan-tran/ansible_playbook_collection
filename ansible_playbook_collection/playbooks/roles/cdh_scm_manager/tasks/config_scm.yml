@@ -17,7 +17,7 @@
         body_format: json
         body: '{"password": "{{ cloudera_admin_password }}" }'
   rescue:
-    - name: Get Cloudera API version - Re-attempt
+    - name: Get Cloudera API version
       uri:
         url: "http://localhost:7180/api/version"
         method: GET
@@ -49,3 +49,33 @@
 - name: Delete Cloudera Manager configuration file
   file: path=/tmp/scm.json state=absent
   delegate_to: localhost
+
+# Cloudera bug: If the cluster does not have Trial or Enterprise licence
+# all API commands installing new services will not work, but raise
+# the following error instead:
+#    "The feature Operational Reports is not available"
+# Try to activate Trial license. Does not mater if we cannot
+# (e.g. already in Trial, Trial already expired)
+- block:
+    - name: Activate Trial license
+      uri:
+        url: "http://localhost:7180/api/{{scm_api_version.content}}/cm/trial/begin"
+        method: POST
+        user: admin
+        password: "{{ cloudera_admin_password }}"
+      register: trial_activation
+      ignore_errors: yes
+    
+    - name: Restart Cloudera Manager
+      become: yes
+      service: name=cloudera-scm-server state=restarted
+      when:
+        - trial_activation is defined
+        - trial_activation.changed
+    
+    - name: Wait for Cloudera Manger
+      wait_for: port=7180 delay=15 timeout=120
+      when:
+        - trial_activation is defined
+        - trial_activation.changed
+  when: cloudera_use_trial_license

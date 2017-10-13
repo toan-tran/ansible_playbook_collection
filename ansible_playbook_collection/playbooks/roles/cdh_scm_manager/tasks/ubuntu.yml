@@ -1,6 +1,16 @@
 ---
 # Install Cloudera's Service and Configuration Manager (SCM) on Ubuntu system
 
+- name: Import Cloudera APT key
+  become: yes
+  apt_key: url="https://archive.cloudera.com/cdh{{ cloudera_manager_version|first }}/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cdh/archive.key" state=present
+  when: cloudera_manager_version is defined
+
+- name: Import Cloudera APT key
+  become: yes
+  apt_key: url="https://archive.cloudera.com/cdh5/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cdh/archive.key" state=present
+  when: cloudera_manager_version is not defined
+
 - name: Set up APT Cloudera repo
   become: yes
   template: src=cloudera_manager.list.j2 dest=/etc/apt/sources.list.d/cloudera_manager.list
@@ -90,5 +100,5 @@
   tags: cdh-scm-manager-config
 
 - name: Check Cloudera Manager port
-  wait_for: port=7180 delay=10 timeout=60
+  wait_for: port=7180 delay=15 timeout=120
   tags: cdh-scm-manager-config

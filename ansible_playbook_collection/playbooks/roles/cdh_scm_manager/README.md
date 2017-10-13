@@ -25,8 +25,8 @@ cloudera_external_database:
    type: Database type (mysql / postgre / oracle)
    host: Database host name or IP
    cloudera_db: name of the database used for Cloudera
-   cloudera_user: user for Cloudera
-   cloudera_pwd: passwod for Cloudera
+   cloudera_user: user of Cloudera database
+   cloudera_password: password of Cloudera database
 
 cloudera_external_database should be stored in an encrypted vars file.
 
@@ -35,12 +35,20 @@ cloudera_external_database should be stored in an encrypted vars file.
 
 cloudera_admin_password: password for Cloudera Manager admin. Should be stored in an
                          encrypted vars file.
-cloudera_manager_repository: (optional) Customized repository for Cloudera Manager,
-                             If not set, use official Cloudera Manager repository
+cloudera_manager_version: (optional) the version of Cloudera Manager to install. If not
+                          present, will install latest version of the repository.
+cloudera_manager_repository: (optional) Repository for Cloudera Manager. If use in conjunction
+                             with cloudera_manager_version, make sure that the repository
+                             contains the Cloudera Manager of the required version.
+                             If not present, will use official Cloudera repository. 
 cloudera_parcel_repositories: (optional) Customized Cloudera parcel repository.
                               If not set, use official Cloudera parcel repository.
-cloudera_version: (optional) customized Cloudera version. If not set, use default
-                  (which is the latest) version.
+cloudera_use_trial_license: (optional) true (default value) if activate Trial license,
+                            false if continue using Express license.
+                            IMPORTANT: to be able to set up services using Cloudera API,
+                            we must activate Trial license. Otherwise API commands return
+                            Error "The feature Operational Reports is not available."
+                            It does not prevent us from setting up services using Wizard though.
 
 
 ## Notes on this playbook ##
@@ -48,7 +56,9 @@ cloudera_version: (optional) customized Cloudera version. If not set, use defaul
  - Uses OpenJDK 1.8.0 as default for CentOS. To use another java package, declare as 'java_package'variable
    Debian family uses Oracle JDK 1.8.
  - Uses Oracle Java 1.8.0 for Ubuntu.
-
+ - If cloudera_manager_version is defined and cloudera_manager_repository is not, the playbook will try to
+   use official Cloudera repository, which is at https://archive.cloudera.com/cm{4,5}/. Make sure that the
+   repository of the required version is available for the host OS.
 
 ## Links ##
 
