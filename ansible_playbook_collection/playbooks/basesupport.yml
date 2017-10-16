@@ -2,6 +2,11 @@
 # Install and configure basic services
 
 - hosts: all
+  gather_facts: no
+  roles:
+    - role: wait_host
+
+- hosts: all
   become: yes
   roles:
   - role: added_dns

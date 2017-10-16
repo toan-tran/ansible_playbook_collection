@@ -1,0 +1,3 @@
+---
+- name: Wait for host
+  wait_for_connection: sleep={{wait_host_sleep}} timeout={{wait_host_timeout}}
