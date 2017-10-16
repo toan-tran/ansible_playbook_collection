@@ -37,12 +37,15 @@
 - name: Disable SELinux
   become: yes
   lineinfile: dest=/etc/selinux/config regexp="^SELINUX=" line="SELINUX=disabled"
-  notify: Restart vm 
+  notify: Restart host
+  when: disable_security
   tags: disable_security
 
 - name: Disable iptables
   become: yes
   service: name=iptables state=stopped enabled=no
-  notify: Restart vm
-  when: "{{ ansible_distribution_major_version }} == '6'"
+  notify: Restart host
+  when:
+    - disable_security
+    - "{{ ansible_distribution_major_version }} == '6'"
   tags: disable_security

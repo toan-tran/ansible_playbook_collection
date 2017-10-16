@@ -1,6 +1,12 @@
 ---
+
 - name: Restart vm
   become: yes
-  shell: reboot
-  tags: disable_security
+  shell: sleep 5 && shutdown -r now "Ansible reboots host"
+  async: 2
+  poll: 0
+  listen: Restart host
 
+- name: Wait for host to be back
+  wait_for_connection: delay=10 sleep=10 timeout=120
+  listen: Restart host

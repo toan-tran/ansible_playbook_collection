@@ -9,10 +9,11 @@
 - hosts: all
   become: yes
   roles:
-  - role: added_dns
-    tags: basesupport,added_dns
-  - role: base
-    tags: basesupport,base
-  - role: epel
-    tags: basesupport,epel
-
+    - role: added_dns
+      tags:
+        - added_dns
+        - basesupport
+    - role: base
+      tags:
+        - base
+        - basesupport

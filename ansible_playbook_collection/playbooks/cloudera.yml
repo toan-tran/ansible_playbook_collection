@@ -1,0 +1,7 @@
+---
+
+- include: basesupport.yml
+
+- incude: epel.yml
+
+- include: cloudera_scm.yml

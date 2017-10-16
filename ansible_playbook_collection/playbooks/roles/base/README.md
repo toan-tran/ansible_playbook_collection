@@ -9,7 +9,7 @@ This role will do the following:
   - Configure Timezone
   - Install and configure Vim
   - Install and configure Screen
-  - Disable SELinux and Firewall on RedHat family OS.
+  - (Optional) Disable SELinux and Firewall on RedHat family OS.
 
 Work with RedHat family and Debian family OS.
 
@@ -17,3 +17,4 @@ Work with RedHat family and Debian family OS.
 
  - timezone: (string - file path) (default: Europe/Paris) Timezone to change to.
              The timezone files' root folder is /usr/share/zoneinfo/
+ - disable_security: (bool) True (default value) will disable iptables and SELinux
