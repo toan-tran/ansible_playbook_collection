@@ -1,0 +1,108 @@
+{
+  "name": "mgmt",
+  "type": "MGMT",
+  "roles": [
+    {
+      "name": "mgmt-SERVICEMONITOR",
+      "type": "SERVICEMONITOR",
+      "hostRef": {
+        "hostId": "{{ hostvars[groups['cdh-cms'][0]]['fqdn'] }}"
+      }
+    }, {
+      "name": "mgmt-ACTIVITYMONITOR",
+      "type": "ACTIVITYMONITOR",
+      "roleConfigGroupRef": {
+        "roleConfigGroupName": "mgmt-ACTIVITYMONITOR-BASE"
+      },
+      "hostRef": {
+        "hostId": "{{ hostvars[groups['cdh-cms'][0]]['fqdn'] }}"
+      }
+    }, {
+      "name": "mgmt-HOSTMONITOR",
+      "type": "HOSTMONITOR",
+      "hostRef": {
+        "hostId": "{{ hostvars[groups['cdh-cms'][0]]['fqdn'] }}"
+      }
+    }, {
+      "name": "mgmt-REPORTSMANAGER",
+      "type": "REPORTSMANAGER",
+      "roleConfigGroupRef": {
+        "roleConfigGroupName": "mgmt-REPORTSMANAGER-BASE"
+      },
+      "hostRef": {
+        "hostId": "{{ hostvars[groups['cdh-cms'][0]]['fqdn'] }}"
+      }
+    }, {
+      "name": "mgmt-EVENTSERVER",
+      "type": "EVENTSERVER",
+      "hostRef": {
+        "hostId": "{{ hostvars[groups['cdh-cms'][0]]['fqdn'] }}"
+      }
+    }, {
+      "name": "mgmt-ALERTPUBLISHER",
+      "type": "ALERTPUBLISHER",
+      "hostRef": {
+        "hostId": "{{ hostvars[groups['cdh-cms'][0]]['fqdn'] }}"
+      }
+    }
+  ],
+  "roleConfigGroups": [
+    {
+      "name": "mgmt-ACTIVITYMONITOR-BASE",
+      "displayName": "Activity Monitor Default Group",
+      "roleType": "ACTIVITYMONITOR",
+      "base": true,
+      "serviceRef": {
+        "serviceName": "mgmt"
+      },
+      "config": {
+        "items": [
+          {
+            "name": "firehose_database_host",
+            "value": "{{ amondb.db_host| default(groups['mariadb'][0]|default(groups['cdh-cms'][0])) }}"
+          }, {
+            "name": "firehose_database_name",
+            "value": "{{ amondb.db_name }}"
+          }, {
+            "name": "firehose_database_password",
+            "value": "{{ amondb.db_password }}"
+          }, {
+            "name": "firehose_database_type",
+            "value": "{{ amondb.db_type }}"
+          }, {
+            "name": "firehose_database_user",
+            "value": "{{ amondb.db_user }}"
+          }
+        ]
+      }
+    }, {
+      "name": "mgmt-REPORTSMANAGER-BASE",
+      "displayName": "Reports Manager Default Group",
+      "roleType": "REPORTSMANAGER",
+      "base": true,
+      "serviceRef": {
+        "serviceName": "mgmt"
+      },
+      "config": {
+        "items": [
+          {
+            "name": "headlamp_database_host",
+            "value": "{{ rmandb.db_host| default(groups['mariadb'][0]|default(groups['cdh-cms'][0])) }}"
+          }, {
+            "name": "headlamp_database_name",
+            "value": "{{ rmandb.db_name }}"
+          }, {
+            "name": "headlamp_database_password",
+            "value": "{{ rmandb.db_password }}"
+          }, {
+            "name": "headlamp_database_type",
+            "value": "{{ rmandb.db_type }}"
+          }, {
+            "name": "headlamp_database_user",
+            "value": "{{ rmandb.db_user }}"
+          }
+        ]
+      }
+    }
+  ]
+}

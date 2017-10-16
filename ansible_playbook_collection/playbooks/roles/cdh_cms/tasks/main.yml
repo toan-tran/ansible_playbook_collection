@@ -1,0 +1,5 @@
+---
+# Install Cloudera Management Service (CMS) on Cloudera Manager node
+# Required that Cloudera Agent is installed on host
+- include: deploy.yml
+  tags: cdh-cms
