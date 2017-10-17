@@ -74,7 +74,7 @@
 
 - name: Start Cloudera Manager
   become: yes
-  service: name=cloudera-scm-server state=started
+  service: name=cloudera-scm-server state=restarted
   tags: cdh-scm-manager-config
 
 - name: Check Cloudera Manager port

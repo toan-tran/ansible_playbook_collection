@@ -22,3 +22,7 @@
   become: yes
   shell: "echo never > /sys/kernel/mm/transparent_hugepage/defrag"
   tags: huge-page
+
+- name: Change random to urandom
+  become: yes
+  shell: mv /dev/random /dev/random2 && ln -s /dev/urandom /dev/random

@@ -12,6 +12,21 @@ point for creating / managing a Cloudera Hadoop cluster.
 cloudera_manager_repository: (optional) Customized repository for Cloudera Manager,
                              If not set, use official Cloudera Manager repository
 
+
+## Other variables ##
+
+  - fqdn: (optional) Fully Qualified Domain Name of the host. If set, will use host's fqdn value as
+          fullname of the host in CMS template. Otherwise will use ansible_fqdn.
+
+Note that by default Cloudera Agent reports back using Fully Qualified Domain Name (FQDN) from the same
+Python code as Ansible ansible_fqdn:
+
+>      python -c 'import socket; \
+                  print socket.getfqdn(), socket.gethostbyname(socket.getfqdn())'
+
+This may not be able to retrieve the correct FQDN in some cases.
+
+
 ## Notes on this playbook ##
 
  - Use OpenJDK 1.8.0

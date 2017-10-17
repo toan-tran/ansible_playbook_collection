@@ -17,7 +17,7 @@
   shell: "yum clean all"
   tags: cdh-agent-yum-repo, cdh-agent-base
 
-- name: Install prequisite dependencies for Cloudera SCM
+- name: Install prerequisite dependencies for Cloudera SCM
   become: yes
   yum: name={{ item }} state=present
   with_items:

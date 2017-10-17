@@ -37,6 +37,20 @@ The cloudera_scm_manager role activates Trial license by default.
 Without declared databases (amondb.db_host, rmandb.db_host), this role will try to use the first host in [mariadb] group
 as the database, or if this later is missing, use the first host of [cdh-cms] as database.
 
+## Other variables ##
+
+  - fqdn: (optional) Fully Qualified Domain Name of the host. If set, will use host's fqdn value as
+          fullname of the host in CMS template. Otherwise will use ansible_fqdn.
+
+Note that by default Cloudera Agent reports back using Fully Qualified Domain Name (FQDN) from the same
+Python code as Ansible ansible_fqdn:
+
+>      python -c 'import socket; \
+                  print socket.getfqdn(), socket.gethostbyname(socket.getfqdn())'
+
+This may not be able to retrieve the correct FQDN in some cases.
+
+
 
 ## Notes on this playbook ##
 

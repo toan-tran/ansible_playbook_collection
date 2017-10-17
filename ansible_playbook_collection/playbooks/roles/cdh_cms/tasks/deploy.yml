@@ -13,8 +13,10 @@
 - name: Show Cloudera Manager API version
   debug: var=scm_api_version
 
+- set_fact: cms_host_fullname="{{ hostvars[groups['cdh-cms'][0]]['fqdn'] | default(hostvars[groups['cdh-cms'][0]]['ansible_fqdn']) }}"
+
 - name: Make Cloudera CMS template
-  template: src=cms.json.j2 dest=/tmp/cms.json
+  template: src=cms.json.j2 dest=/tmp/cloudera_cms.json
   delegate_to: localhost
 
 - name: Install Cloudera Management Service (CMS)
@@ -22,7 +24,7 @@
     url:  "http://localhost:7180/api/{{scm_api_version.content}}/cm/service"
     method: PUT
     body_format: json
-    body: "{{ lookup('file', '/tmp/cms.json') }}"
+    body: "{{ lookup('file', '/tmp/cloudera_cms.json') }}"
     status_code: 100,200,400
     user: admin
     password: "{{ cloudera_admin_password }}"
@@ -50,3 +52,7 @@
 
 - name: Show CMS Start response
   debug: var=start_resp
+
+- name: Delete CMS template
+  file: path=/tmp/cloudera_cms.json state=absent
+  delegate_to: localhost
