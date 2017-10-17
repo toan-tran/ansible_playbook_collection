@@ -1,7 +1,10 @@
 ---
+# Playbooks for installing Cloudera cluster.
 
 - include: basesupport.yml
 
 - incude: epel.yml
 
 - include: cloudera_scm.yml
+
+- include: cloudera_cluster.yml

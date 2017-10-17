@@ -1,0 +1,58 @@
+# Inventory example for Cloudera roles test
+# Create the following hosts and assure that you can ssh into the hosts from
+# Ansible machine without password. Make sure that the FQDN is well recognized
+# by all hosts.
+# OS: CentOS 7
+# Playbook:
+#    cloudera.yml
+# A simple way is to put config into ssh config
+# For instance, if a host 'acdh-0' has IP 172.16.110.150 and I can ssh into it with
+# user name centos and private key at ~/keys/test.pem, then add into /etc/hosts:
+# 172.16.110.150  acdh-0.novalocal  acdh-0
+#
+# and add into ~/.ssh/config:
+# Host acdh-0
+#    StrictHostKeyChecking no
+#    User centos
+#    IdentityFile ~/keys/test.pem
+#
+[all]
+acdh-0         ansible_host=172.16.110.150    fqdn=acdh-0.novalocal
+acdh-1         ansible_host=172.16.110.151    fqdn=acdh-1.novalocal
+acdh-2         ansible_host=172.16.110.152    fqdn=acdh-2.novalocal
+acdh-3         ansible_host=172.16.110.153    fqdn=acdh-3.novalocal
+acdh-4         ansible_host=172.16.110.154    fqdn=acdh-4.novalocal
+acdh-5         ansible_host=172.16.110.155    fqdn=acdh-5.novalocal
+acdh-6         ansible_host=172.16.110.156    fqdn=acdh-6.novalocal
+
+[cdh:vars]
+cloudera_scm_version=5.13
+cloudera_version=5.12.1
+cloudera_product=5.12.1-1.cdh5.12.1.p0.3
+#cloudera_manager_repository=https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/5.13/
+cloudera_clustername=cluster1
+
+[cdh:children]
+cdh-managers
+cdh-agents
+
+[cdh-managers]
+acdh-0
+
+[cdh-agents:children]
+cdh-master1
+cdh-master2
+cdh-workers
+
+[cdh-master1]
+acdh-1
+
+[cdh-master2]
+acdh-2
+
+[cdh-workers]
+acdh-[3:6]
+
+[mariadb]
+acdh-0
+

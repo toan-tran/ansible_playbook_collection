@@ -1,0 +1,12 @@
+- hosts: cdh-managers
+  vars_files:
+    - "secrets/{{deployment_name}}.yml"
+  roles:
+    - role: cdh_cms
+      tags:
+        - cdh-cms
+        - cdh
+    - role: cdh_cluster
+      tags:
+        - cdh-cluster
+        - cdh

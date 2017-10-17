@@ -1,0 +1,5 @@
+---
+# Configure a Cloudera Hadoop cluster
+# Require that Cloudera Manager Server and Agents are installed and configured
+- include: deploy.yml
+  tags: cdh-cluster-deploy

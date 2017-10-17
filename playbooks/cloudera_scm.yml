@@ -6,20 +6,26 @@
 
 - hosts: cdh
   roles:
-  - role: cdh_base
-    tags: cdh,cdh-base
+    - role: cdh_base
+      tags:
+        - cdh-base
+        - cdh
  
 - hosts: cdh-agents
   vars_files:
     - "secrets/{{deployment_name}}.yml"
   roles:
     - role: cdh_scm_agent
-      tags: cdh,cdh-agent
+      tags:
+        - cdh-agent
+        - cdh
 
 - hosts: cdh-managers
   vars_files:
     - "secrets/{{deployment_name}}.yml"
   roles:
     - role: cdh_scm_manager
-      tags: cdh,cdh-manager
+      tags:
+        - cdh-manager
+        - cdh
 
