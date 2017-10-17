@@ -92,7 +92,6 @@
 
 - name: Pause 30'
   pause: seconds=30
-  when: cloudera_external_database is not defined
 
 - name: Start Cloudera Manager
   become: yes

@@ -70,7 +70,6 @@
 
 - name: Pause 30'
   pause: seconds=30
-  when: cloudera_external_database is not defined
 
 - name: Start Cloudera Manager
   become: yes
@@ -80,3 +79,4 @@
 - name: Check Cloudera Manager port
   wait_for: port=7180 delay=15 timeout=120
   tags: cdh-scm-manager-config
+
