@@ -1,5 +1,5 @@
 
 - name: Restart Cloudera Manager Agent
   become: yes
-  service: name=cloudera-scm-agent state=started
+  service: name=cloudera-scm-agent state=restarted
 

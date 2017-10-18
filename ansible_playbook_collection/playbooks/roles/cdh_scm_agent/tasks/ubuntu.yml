@@ -1,0 +1,110 @@
+---
+# Install Cloudera Manager Agent on Debian family OS
+
+- name: Install useful packages
+  become: yes
+  package: name={{ item }} update_cache=yes
+  with_items:
+    - python
+    - python-software-properties
+    - ca-certificates
+  tags: cdh-scm-base
+
+- block:
+    - name: Add webupd8team APT Repository for Oracle Java
+      become: yes
+      apt_repository: repo='ppa:webupd8team/java'
+ 
+    - name: Update APT cache
+      become: yes
+      apt: update_cache=yes
+
+    - name: "Accept Oracle Java {{ cloudera_java_family }} License"
+      become: yes
+      debconf: name='oracle-java{{ cloudera_java_family }}-installer' question='shared/accepted-oracle-license-v1-1' value='yes' vtype='select'
+
+    - name: "Install Oracle Java {{ cloudera_java_family }}"
+      become: yes
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - "oracle-java{{ cloudera_java_family }}-installer"
+        - "oracle-java{{ cloudera_java_family }}-set-default"
+
+  rescue:
+    - name: "Remove failed Oracle Java {{ cloudera_java_family }} "
+      become: yes
+      apt: name={{item}} state=absent
+      with_items:
+        - "oracle-java{{ cloudera_java_family }}-installer"
+        - "oracle-java{{ cloudera_java_family }}-set-default"
+      ignore_errors: yes
+
+    - name: Remove webupd8team APT Repository 
+      become: yes
+      shell: "rm -f /etc/apt/sources.list.d/*webupd8team_java*.list"
+
+    - name: Clean APT
+      become: yes
+      shell: apt-get -f install -y && apt-get autoremove -y &&  apt-get clean -y
+
+    - name: Update APT
+      become: yes
+      apt: update_cache=yes
+
+    - name: "Install OpenJDK {{ cloudera_java_family }}"
+      become: yes
+      apt: name={{item}} state=present
+      with_items:
+        - "openjdk-{{ cloudera_java_family }}-jdk"
+  tags: cdh-scm-base
+    
+- name: Add MySQL JDBC connector
+  become: yes
+  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-agent-jdbc
+
+- name: Copy UnlimitedJCEPolicy [1]
+  become: yes
+  copy: src=local_policy.jar dest="/etc/alternatives/jre_1.{{ cloudera_java_family }}.0/lib/security/"
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Copy UnlimitedJCEPolicy [2]
+  become: yes
+  copy: src=US_export_policy.jar dest="/etc/alternatives/jre_1.{{ cloudera_java_family }}.0/lib/security/"
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Import Cloudera APT key
+  become: yes
+  apt_key: url="https://archive.cloudera.com/cdh{{ cloudera_manager_version|first }}/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cdh/archive.key" state=present
+  when: cloudera_manager_version is defined
+  tags: cdh-scm-base
+
+- name: Import Cloudera APT key
+  become: yes
+  apt_key: url="https://archive.cloudera.com/cdh5/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cdh/archive.key" state=present
+  when: cloudera_manager_version is not defined
+  tags: cdh-scm-base
+
+- name: Set up APT Cloudera repo
+  become: yes
+  template: src=cloudera_manager.list.j2 dest=/etc/apt/sources.list.d/cloudera_manager.list
+  tags: cdh-scm-base
+
+- name: Create cloudera-scm user
+  become: yes
+  user: name=cloudera-scm state=present home=/opt/cloudera shell=/bin/bash
+  tags: cdh-scm-base
+
+- name: Install Cloudera Manager Agent
+  become: yes
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - cloudera-manager-daemons
+    - cloudera-manager-agent
+  tags: cdh-agent-base
+
+- name: Add Cloudera Manager Agent config
+  become: yes
+  template: src=config.ini.j2 dest=/etc/cloudera-scm-agent/config.ini
+  notify: Restart Cloudera Manager Agent
+  tags: cdh-agent-config

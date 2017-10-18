@@ -2,7 +2,7 @@
 
 ## Introduction ##
 
-This playbook will install Cloudera Manager Agent 5.x.x on CentOS.
+This playbook will install Cloudera Manager Agent 5.x.x on RHEL and Debian family OS.
 
 In conjunction with the CDH_SCM_Manager playbook, it forms a starting
 point for creating / managing a Cloudera Hadoop cluster.
@@ -12,6 +12,7 @@ point for creating / managing a Cloudera Hadoop cluster.
 cloudera_manager_repository: (optional) Customized repository for Cloudera Manager,
                              If not set, use official Cloudera Manager repository
 
+cloudera_java_family: (optional) Java family (7/8) to install. Default value: 8
 
 ## Other variables ##
 
@@ -29,7 +30,7 @@ This may not be able to retrieve the correct FQDN in some cases.
 
 ## Notes on this playbook ##
 
- - Use OpenJDK 1.8.0
+ - This role tries to install Oracle Java, but will fall back to OpenJDK if failed
 
 ## Links ##
 
