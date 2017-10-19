@@ -6,24 +6,42 @@
   yum: name={{ item }} state=present
   with_items:
     - python
-    - "java-1.{{ cloudera_java_family }}.0-openjdk"
     - psmisc
   tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Check Java
+  command: which java
+  register: java_check
+  ignore_errors: yes
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Show Java test
+  debug: var=java_check
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Install java
+  become: yes
+  yum: name="java-1.{{ cloudera_java_family }}.0-openjdk"
+  when: "'failed' in java_check"
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Search Java path
+  shell: readlink -f `which java`
+  register: java_path
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-java-unlimited
+
+- name: Copy UnlimitedJCEPolicy
+  become: yes
+  copy: src={{ item }} dest="{{ java_path.stdout|dirname }}/../lib/security/"
+  with_items:
+    - local_policy.jar
+    - US_export_policy.jar
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-java-unlimited
 
 - name: Add MySQL JDBC connector
   become: yes
   copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
   tags: cdh-agent-jdk, cdh-agent-base, cdh-agent-jdbc
-
-- name: Copy UnlimitedJCEPolicy [1]
-  become: yes
-  copy: src=local_policy.jar dest="/etc/alternatives/jre_1.{{ cloudera_java_family }}.0/lib/security/"
-  tags: cdh-agent-jdk, cdh-agent-base
-
-- name: Copy UnlimitedJCEPolicy [2]
-  become: yes
-  copy: src=US_export_policy.jar dest="/etc/alternatives/jre_1.{{ cloudera_java_family }}.0/lib/security/"
-  tags: cdh-agent-jdk, cdh-agent-base
 
 - name: Set up YUM Cloudera Manager repo
   become: yes
