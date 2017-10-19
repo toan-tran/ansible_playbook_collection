@@ -1,0 +1,73 @@
+---
+# Install Cloudera Manager Agent on RHEL family OS
+
+- name: Install prerequisite dependencies for Cloudera SCM
+  become: yes
+  yum: name={{ item }} state=present
+  with_items:
+    - python
+    - psmisc
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Check Java
+  command: which java
+  register: java_check
+  ignore_errors: yes
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Show Java test
+  debug: var=java_check
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Install java
+  become: yes
+  yum: name="java-1.{{ cloudera_java_family }}.0-openjdk"
+  when: "'failed' in java_check"
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Search Java path
+  shell: readlink -f `which java`
+  register: java_path
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-java-unlimited
+
+- name: Copy UnlimitedJCEPolicy
+  become: yes
+  copy: src={{ item }} dest="{{ java_path.stdout|dirname }}/../lib/security/"
+  with_items:
+    - local_policy.jar
+    - US_export_policy.jar
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-java-unlimited
+
+- name: Add MySQL JDBC connector
+  become: yes
+  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-agent-jdbc
+
+- name: Set up YUM Cloudera Manager repo
+  become: yes
+  template: src=cloudera_manager.repo.j2 dest=/etc/yum.repos.d/cloudera_manager.repo
+  tags: cdh-agent-repo, cdh-agent-base
+
+- name: Set up YUM Cloudera CDH repo
+  become: yes
+  template: src=cloudera_cdh.repo.j2 dest=/etc/yum.repos.d/cloudera_cdh.repo
+  tags: cdh-agent-repo, cdh-agent-base
+
+- name: Create cloudera-scm user
+  become: yes
+  user: name=cloudera-scm state=present home=/opt/cloudera shell=/bin/bash
+  tags: cdh-agent-base
+
+- name: Install Cloudera Manager Agent
+  become: yes
+  yum: name={{ item }} state=present disable_gpg_check=yes
+  with_items:
+    - cloudera-manager-daemons
+    - cloudera-manager-agent
+  tags: cdh-agent-base
+
+- name: Add Cloudera Manager Agent config
+  become: yes
+  template: src=config.ini.j2 dest=/etc/cloudera-scm-agent/config.ini
+  notify: Restart Cloudera Manager Agent
+  tags: cdh-agent-config
