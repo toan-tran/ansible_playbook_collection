@@ -1,2 +1,3 @@
 java_package: java-1.8.0-openjdk
 cloudera_use_trial_license: true
+cloudera_java_family: 8

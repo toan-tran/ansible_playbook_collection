@@ -16,35 +16,82 @@
   template: src=cloudera_manager.list.j2 dest=/etc/apt/sources.list.d/cloudera_manager.list
   tags: cdh-scm-base, cdh-scm-repo
 
-- name: Install useful packages
+- name: Check Java
+  command: which java
+  register: java_check
+  ignore_errors: yes
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Show Java test
+  debug: var=java_check
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- block:
+    - name: Add webupd8team APT Repository for Oracle Java
+      become: yes
+      apt_repository: repo='ppa:webupd8team/java'
+
+    - name: Update APT cache
+      become: yes
+      apt: update_cache=yes
+
+    - name: "Accept Oracle Java {{ cloudera_java_family }} License"
+      become: yes
+      debconf: name='oracle-java{{ cloudera_java_family }}-installer' question='shared/accepted-oracle-license-v1-1' value='yes' vtype='select'
+
+    - name: "Install Oracle Java {{ cloudera_java_family }}"
+      become: yes
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - "oracle-java{{ cloudera_java_family }}-installer"
+        - "oracle-java{{ cloudera_java_family }}-set-default"
+
+  rescue:
+    - name: "Remove failed Oracle Java {{ cloudera_java_family }} "
+      become: yes
+      apt: name={{item}} state=absent
+      with_items:
+        - "oracle-java{{ cloudera_java_family }}-installer"
+        - "oracle-java{{ cloudera_java_family }}-set-default"
+      ignore_errors: yes
+
+    - name: Remove webupd8team APT Repository
+      become: yes
+      shell: "rm -f /etc/apt/sources.list.d/*webupd8team_java*.list"
+
+    - name: Clean APT
+      become: yes
+      shell: apt-get -f install -y && apt-get autoremove -y &&  apt-get clean -y
+
+    - name: Update APT
+      become: yes
+      apt: update_cache=yes
+
+    - name: "Install OpenJDK {{ cloudera_java_family }}"
+      become: yes
+      apt: name={{ item }} state=present
+      with_items:
+        - "openjdk-{{ cloudera_java_family }}-jdk"
+  when: "'failed' in java_check"
+  tags: cdh-agent-jdk, cdh-agent-base
+
+- name: Search Java path
+  shell: readlink -f `which java`
+  register: java_path
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-java-unlimited
+
+- name: Copy UnlimitedJCEPolicy
   become: yes
-  package: name={{ item }}
+  copy: src={{ item }} dest="{{ java_path.stdout|dirname }}/../lib/security/"
   with_items:
-    - python-software-properties
+    - local_policy.jar
+    - US_export_policy.jar
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-java-unlimited
 
-- name: Add webupd8team APT Repository for Oracle Java
+- name: Add MySQL JDBC connector
   become: yes
-  apt_repository: repo='ppa:webupd8team/java'
-  tags: cdh-scm-base
-
-- name: Update APT cache
-  become: yes
-  apt: update_cache=yes
-  tags: cdh-scm-base
-
-- name: Accept Oracle Java 8 License
-  become: yes
-  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
-  tags: cdh-scm-base
-
-- name: Install Oracle Java 8
-  become: yes
-  apt: name={{item}} state=latest
-  with_items:
-    - oracle-java8-installer
-    - ca-certificates
-    - oracle-java8-set-default
-  tags: cdh-scm-base
+  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
+  tags: cdh-agent-jdk, cdh-agent-base, cdh-agent-jdbc
 
 - name: Create cloudera-scm user
   become: yes
@@ -63,16 +110,6 @@
   become: yes
   template: src=default_cloudera-scm-server.j2 dest=/etc/default/cloudera-scm-server
   tags: cdh-scm-base
-
-- name: Add MySQL JDBC connector
-  become: yes
-  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
-  when: cloudera_external_database is defined
-
-- name: Add MySQL JDBC connector
-  become: yes
-  copy: src=mysql-connector-java-5.1.40-bin.jar dest=/usr/share/java/mysql-connector-java.jar
-  when: cloudera_external_database is defined
 
 - name: Update Cloudera Manager DB configuration
   become: yes
