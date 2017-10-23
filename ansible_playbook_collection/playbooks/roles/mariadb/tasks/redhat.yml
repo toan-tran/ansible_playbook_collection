@@ -5,11 +5,21 @@
   become: yes
   template: src=mariadb.repo.j2 dest=/etc/yum.repos.d/mariadb.repo
 
+- name: Create mysql group
+  become: yes
+  group: name=mysql
+
+- name: Create mysql user
+  become: yes
+  user: name=mysql group=mysql system=yes
+
+- name: Create /var/lib/mysql
+  become: yes
+  file: path=/var/lib/mysql owner=mysql group=mysql state=directory mode=755
+
 - name: Install MariaDB and tools
   become: yes
   yum: name={{ item }} state=present
   with_items:
     - MariaDB-server
     - MySQL-python
-  run_once: true
-

@@ -1,4 +1,4 @@
 ---
-- name: Restart Mariadb
+- name: Restart MariaDB
+  become: yes
   service: name=mysql state=restarted
-  ignore_errors: yes

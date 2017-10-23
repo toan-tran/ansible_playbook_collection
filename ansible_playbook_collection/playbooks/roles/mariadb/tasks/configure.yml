@@ -1,10 +1,14 @@
 ---
 # Configure MySQL server
 
-- name: Setup my cnf for root
+- name: Open MySQL to all hosts
   become: yes
-  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root mode=0600
-  run_once: true
+  lineinfile:
+    dest: /etc/my.cnf.d/server.cnf
+    regexp: "^bind-address"
+    line: "bind-address = {{ mysql_bind_address }}"
+  when: ansible_os_family == 'RedHat'
+  notify: Restart MariaDB
 
 - name: Open MySQL to all hosts
   become: yes
@@ -12,18 +16,70 @@
     dest: /etc/mysql/my.cnf
     regexp: "^bind-address"
     line: "bind-address = {{ mysql_bind_address }}"
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_major_version == '14'
+  notify: Restart MariaDB
 
-- name: Start server to generate mysql schema
-  become: yes
-  service: name=mysql state=started
-  run_once: true
+- block:
+
+  - name: Open MySQL to all hosts
+    become: yes
+    lineinfile:
+      dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+      regexp: "^bind-address"
+      line: "bind-address = {{ mysql_bind_address }}"
+    notify: Restart MariaDB
+
+  # (Toan) New Debian OS uses full 4 byte UTF8 character set (utf8mb4)
+  # which will make varchar key length limit to 767/4 = 191 for InnoDB version
+  # <= 5.6 (Inno key length limit = 767). To be able to use 255 varchar string
+  # as key, we swtich back to 3 byte UTF8 (utf8): 255 * 3 = 765 < 767.
+
+  - name: Use UTF8 instead of default Debian UTF8mb4 - 1/4
+    become: yes
+    lineinfile:
+      dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+      regexp: "^character-set-server"
+      line: "character-set-server = utf8"
+    notify: Restart MariaDB
+
+  - name: Use UTF8 instead of default Debian UTF8mb4 - 2/4
+    become: yes
+    lineinfile:
+      dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+      regexp: "^collation-server"
+      line: "collation-server = utf8_general_ci"
+    notify: Restart MariaDB
+
+  - name: Use UTF8 instead of default Debian UTF8mb4 - 3/4
+    become: yes
+    lineinfile:
+      dest: /etc/mysql/mariadb.conf.d/50-client.cnf
+      regexp: "^default-character-set"
+      line: "default-character-set = utf8"
+    notify: Restart MariaDB
+
+  - name: Use UTF8 instead of default Debian UTF8mb4 - 4/4
+    become: yes
+    lineinfile:
+      dest: /etc/mysql/mariadb.conf.d/50-mysql-clients.cnf
+      regexp: "^default-character-set"
+      line: "default-character-set = utf8"
+    notify: Restart MariaDB
+
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_major_version == '16'
+
+- meta: flush_handlers
 
 - name: Wait for service
   wait_for: port={{ mysql_port }} delay=5 timeout=21
-  run_once: true
 
 - block:
     - name: Change root user password on first run
+      become: yes
       mysql_user: login_user=root
                   login_password=''
                   name=root
@@ -36,9 +92,10 @@
         - "::1"
         - "{{ ansible_hostname }}"
         - "localhost"
-      run_once: true
+      ignore_errors: yes
     
     - name: Delete anonymous user
+      become: yes
       mysql_user: login_user=root
                   login_password={{ root_password }}
                   name=''
@@ -49,15 +106,18 @@
         - "localhost"
         - "%"
         - "{{ ansible_hostname }}"
-      run_once: true
     
     - name: Delete test database
+      become: yes
       mysql_db: login_user=root
                 login_password={{ root_password }}
                 name=test
                 state='absent'
-      run_once: true
       tags: mariadb-delete-test
+
+    - name: Setup my cnf for root
+      become: yes
+      template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
 
   rescue:
     - debug: msg="Cannot access to MySQL using default credential. Suppose that root password has been already configured."
