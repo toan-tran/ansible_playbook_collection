@@ -5,8 +5,8 @@ name=Cloudera Manager
 baseurl="{{ cloudera_manager_repository }}"
 gpgcheck = 0
 {% elif cloudera_manager_version is defined %}
-baseurl=https://archive.cloudera.com/cm{{cloudera_manager_version|first}}/redhat/$releasever/x86_64/cm/{{cloudera_manager_version}}
-gpgkey =https://archive.cloudera.com/cm{{cloudera_manager_version|first}}/redhat/$releasever/x86_64/cm/RPM-GPG-KEY-cloudera
+baseurl=https://archive.cloudera.com/cm{{cloudera_manager_version|regex_replace('^([0-9]+)(.*)$', '\1')}}/redhat/$releasever/x86_64/cm/{{cloudera_manager_version}}
+gpgkey =https://archive.cloudera.com/cm{{cloudera_manager_version|regex_replace('^([0-9]+)(.*)$', '\1')}}/redhat/$releasever/x86_64/cm/RPM-GPG-KEY-cloudera
 gpgcheck = 1
 {% else %}
 baseurl=https://archive.cloudera.com/cm5/redhat/$releasever/x86_64/cm/5/
