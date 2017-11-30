@@ -3,7 +3,7 @@
 
 - name: Import Cloudera APT key
   become: yes
-  apt_key: url="https://archive.cloudera.com/cdh{{ cloudera_manager_version|first }}/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cdh/archive.key" state=present
+  apt_key: url="https://archive.cloudera.com/cdh{{ cloudera_manager_version|regex_replace('^([0-9]+)(.*)$', '\1') }}/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/amd64/cdh/archive.key" state=present
   when: cloudera_manager_version is defined
 
 - name: Import Cloudera APT key

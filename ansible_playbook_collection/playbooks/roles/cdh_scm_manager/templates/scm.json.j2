@@ -9,7 +9,7 @@
     {% elif cloudera_version is defined %}
     {
       "name" : "REMOTE_PARCEL_REPO_URLS",
-            "value" : "http://archive.cloudera.com/cdh{{ cloudera_version|first }}/parcels/{{ cloudera_version }}/"
+            "value" : "http://archive.cloudera.com/cdh{{ cloudera_version|regex_replace('^([0-9]+)(.*)$', '\1') }}/parcels/{{ cloudera_version }}/"
     }
    {% endif %}
   ]
