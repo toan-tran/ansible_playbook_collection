@@ -87,11 +87,11 @@
                   priv=*.*:ALL,GRANT
                   host={{ item }}
       with_items:
+        - "localhost"
         - "%"
         - "127.0.0.1"
         - "::1"
         - "{{ ansible_hostname }}"
-        - "localhost"
       ignore_errors: yes
     
     - name: Delete anonymous user

@@ -1,6 +1,6 @@
 *.pyc
 inventory/
-secrets/
+playbooks/secrets/
 group_vars/
 *.log
 *.retry
