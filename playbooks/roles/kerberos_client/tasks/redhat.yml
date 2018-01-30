@@ -1,0 +1,14 @@
+---
+# Install Kerberos client
+
+- name: Install Kerberos packages
+  become: yes
+  yum: name={{ item }} update_cache=yes
+  with_items:
+    - krb5-libs
+    - krb5-workstation
+    - krb5-auth-dialog
+
+- name: Copy Kerberos configuration
+  become: yes
+  template: src=krb5.conf.j2 dest=/etc/krb5.conf

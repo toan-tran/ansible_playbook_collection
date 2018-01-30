@@ -24,12 +24,3 @@
   when:
     - vm_name != 'localhost'
   tags: os-check-vm-readiness
-
-- include: install_python.yml
-  with_items: "{{ groups['all'] }}"
-  loop_control:
-    loop_var: vm_name
-  when:
-    - vm_name != 'localhost'
-  tags: os-install-python
-

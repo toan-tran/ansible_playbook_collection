@@ -1,0 +1,13 @@
+---
+# Install Kerberos client
+
+- name: Install Kerberos packages
+  become: yes
+  apt: name="{{ item }}" update_cache=yes
+  with_items:
+    - krb5-user
+    - libpam-krb5
+
+- name: Copy Kerberos configuration
+  become: yes
+  template: src=krb5.conf.j2 dest=/etc/krb5.conf

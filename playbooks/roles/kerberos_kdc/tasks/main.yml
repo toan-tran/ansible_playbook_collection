@@ -38,7 +38,7 @@
 
 - name: Generate kerberos database
   become: yes
-  shell: echo -e "{{ kerberos_master_password }}\n{{ kerberos_master_password: }}" | kdb5_util create -s; touch /var/kerberos/db_created
+  shell: echo -e "{{ kerberos_master_password }}\n{{ kerberos_master_password }}" | kdb5_util create -s; touch /var/kerberos/db_created
   when: not krb_db_state.stat.exists
 
 - name: Restart KDC service
