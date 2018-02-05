@@ -1,0 +1,10 @@
+---
+# Install NFS Server on Debian-family OS
+
+- name: Install nfs packages
+  become: yes
+  apt: name=nfs-kernel-server update_cache=yes
+
+- name: Start nfs
+  become: yes
+  service: name=nfs-kernel-server state=started enabled=yes

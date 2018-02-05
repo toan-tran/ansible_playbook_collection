@@ -1,0 +1,17 @@
+---
+# Install NFS on Redhat-family OS
+
+- name: Install packages
+  become: yes
+  yum: name="{{ item }}"
+  with_items:
+    - nfs-utils
+
+- name: Start nfs
+  become: yes
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - rpcbind
+    - nfs-server
+    - nfs-lock
+    - nfs-idmap
