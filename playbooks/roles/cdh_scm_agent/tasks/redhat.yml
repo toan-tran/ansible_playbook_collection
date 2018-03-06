@@ -22,7 +22,7 @@
 - name: Install java
   become: yes
   yum: name="java-1.{{ cloudera_java_family }}.0-openjdk"
-  when: "'failed' in java_check"
+  when: "'failed' in java_check and java_check['failed']"
   tags: cdh-agent-jdk, cdh-agent-base
 
 - name: Search Java path

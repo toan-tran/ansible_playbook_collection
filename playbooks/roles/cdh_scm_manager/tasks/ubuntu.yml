@@ -72,7 +72,7 @@
       apt: name={{ item }} state=present
       with_items:
         - "openjdk-{{ cloudera_java_family }}-jdk"
-  when: "'failed' in java_check"
+  when: "'failed' in java_check and java_check['failed']"
   tags: cdh-agent-jdk, cdh-agent-base
 
 - name: Search Java path

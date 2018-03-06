@@ -66,7 +66,7 @@
       apt: name={{ item }} state=present
       with_items:
         - "openjdk-{{ cloudera_java_family }}-jdk"
-  when: "'failed' in java_check"
+  when: "'failed' in java_check and java_check['failed']"
   tags: cdh-agent-jdk, cdh-agent-base
     
 - name: Search Java path
@@ -103,6 +103,11 @@
   become: yes
   template: src=cloudera_manager.list.j2 dest=/etc/apt/sources.list.d/cloudera_manager.list
   tags: cdh-scm-base
+
+- name: Set up APT Cloudera repo
+  become: yes
+  template: src=cloudera_manager.list.j2 dest=/tmp/cloudera_manager.list
+  delegate_to: localhost
 
 - name: Create cloudera-scm user
   become: yes
