@@ -51,10 +51,10 @@
       "name": "mgmt-ACTIVITYMONITOR-BASE",
       "displayName": "Activity Monitor Default Group",
       "roleType": "ACTIVITYMONITOR",
-      "base": true,
       "serviceRef": {
         "serviceName": "mgmt"
       },
+      {% if 'mariadb' in groups %}
       "config": {
         "items": [
           {
@@ -74,7 +74,9 @@
             "value": "{{ amondb.db_user }}"
           }
         ]
-      }
+      },
+      {% endif %}
+      "base": true
     }, {
       "name": "mgmt-REPORTSMANAGER-BASE",
       "displayName": "Reports Manager Default Group",
@@ -83,6 +85,7 @@
       "serviceRef": {
         "serviceName": "mgmt"
       },
+      {% if 'mariadb' in groups %}
       "config": {
         "items": [
           {
@@ -102,7 +105,9 @@
             "value": "{{ rmandb.db_user }}"
           }
         ]
-      }
+      },
+      {% endif %}
+      "base": true
     }
   ]
 }

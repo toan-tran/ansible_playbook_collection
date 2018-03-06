@@ -54,14 +54,13 @@ This may not be able to retrieve the correct FQDN in some cases.
 
 ## Notes on this playbook ##
 
-  - This role MUST be launched on Cloudera Manger host
+  - This role MUST be launched on Cloudera Manger host (inventory group: [cdh-managers])
   - The host where CMS is installed MUST contains 'fqdn' variable which is the Fully Qualified
 Domain Name of the host.
   - Due to some reason Cloudera API does not accept API call for setting up services if Cloudera
     Manager uses Express license. It would rise an Error:
 
     > "The feature Operational Reports is not available."
-
 
 
 
