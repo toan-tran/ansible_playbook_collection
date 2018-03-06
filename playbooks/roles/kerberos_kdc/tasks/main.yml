@@ -8,7 +8,6 @@
   - krb5-libs
   - krb5-server
   - krb5-workstation
-  - krb5-auth-dialog
 
 - name: Add KBR5 config
   become: yes
@@ -24,27 +23,27 @@
 
 - name: Check Kerberos DB
   stat: path=/var/kerberos/db_created
-  register: db_state
+  register: krb5_db_state
 
 - name: Delete /dev/random
   become: yes
   file: path=/dev/random state=absent
-  when: not krb_db_state.stat.exists
+  when: not krb5_db_state.stat.exists
 
 - name: Use /dev/urandom instead of /dev/random
   become: yes
   file: path=/dev/random src=/dev/urandom state=link force=yes
-  when: not krb_db_state.stat.exists
+  when: not krb5_db_state.stat.exists
 
 - name: Generate kerberos database
   become: yes
   shell: echo -e "{{ kerberos_master_password }}\n{{ kerberos_master_password }}" | kdb5_util create -s; touch /var/kerberos/db_created
-  when: not krb_db_state.stat.exists
+  when: not krb5_db_state.stat.exists
 
 - name: Restart KDC service
   become: yes
   service: name=krb5kdc state=restarted
-  when: not krb_db_state.stat.exists
+  when: not krb5_db_state.stat.exists
 
 - name: Check Kerberos DB
   stat: path=/var/kerberos/admin_created
