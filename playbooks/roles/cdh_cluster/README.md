@@ -32,15 +32,17 @@ The following services are installed with the cluster:
 
 *IMPORTANT NOTE*:
 
-Due to some reason Cloudera API does not accept API call for setting up services
-if Cloudera Manager uses Express license. It would rise an Error:
+  1. Due to some reason Cloudera API does not accept API call for setting up services
+    if Cloudera Manager uses Express license. It would rise an Error:
 
-  > "The feature Operational Reports is not available."
+    > "The feature Operational Reports is not available."
 
-Only Trial or Enterprise license accepts these API calls. Thus Cloudera Manager
-MUST activate one of these licenses before this to work.
+    Only Trial or Enterprise license accepts these API calls. Thus Cloudera Manager
+    MUST activate one of these licenses before this to work.
 
-The cloudera_scm_manager role activates Trial license by default.
+    The cloudera_scm_manager role activates Trial license by default.
+
+  2. If there is already a Hadoop cluster with the same name on Cloudera cluster, it will simply consider that the cluster is already deployed and does not yield an error. That said, this role will neither fix an erred cluster, nor modify an existing cluster.
 
 
 ## Variables ##

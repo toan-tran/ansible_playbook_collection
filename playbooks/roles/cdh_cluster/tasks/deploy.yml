@@ -1,3 +1,17 @@
+- name: Install pip
+  become: yes
+  apt: name="{{ ansible_python.executable | basename }}-pip"
+  when: ansible_os_family == 'Debian'
+
+- name: Install pip
+  become: yes
+  yum: name="{{ ansible_python.executable | basename }}-pip"
+  when: ansible_os_family == 'RedHat'
+
+- name: Install httplib2
+  become: yes
+  pip: name=httplib2
+
 - name: Get Cloudera API version
   uri:
     url: "http://localhost:7180/api/version"
@@ -6,9 +20,6 @@
     password: "{{ cloudera_admin_password }}"
     return_content: yes
   register: scm_api_version
-
-- name: Show Cloudera Manager API version
-  debug: var=scm_api_version
 
 - name: Get Cloudera SCM version
   uri:
@@ -19,14 +30,44 @@
     return_content: yes
   register: scm_version_response
 
-- name: Show SCM version
-  debug: var=scm_version_response
-
-- set_fact: cloudera_scm_version="{{scm_version_response.json.version}}"
+- set_fact: cloudera_manager_version="{{scm_version_response.json.version}}"
 
 - name: Generate Cloudera cluster template file
-  template: src=cluster.json.j2 dest=/tmp/cloudera_cluster.json
+  template: src="{{ cloudera_cluster_template_file }}" dest=/tmp/cloudera_cluster.json
   delegate_to: localhost
+
+- name: Get current parcel repositories
+  cm_config:
+    cm_username: "admin"
+    cm_password: "{{ cloudera_admin_password }}"
+    cm_url: "http://localhost:7180"
+    action: get
+    view: "full"
+    name: "REMOTE_PARCEL_REPO_URLS"
+  register: cm_parcel_urls
+
+- set_fact:
+    cm_parcel_url_list: "{{ cm_parcel_urls['content']['items'][0]['value'].split(',') }}"
+
+- block:
+  - set_fact:
+      cm_new_parcel_urls:  "{{ cm_parcel_url_list + [cloudera_cdh_parcel_url] }}"
+  
+  - name: Show new cm_parcel_urls
+    debug: var=cm_new_parcel_urls
+  
+  - name: Add new parcel repositories
+    cm_config:
+      cm_username: "admin"
+      cm_password: "{{ cloudera_admin_password }}"
+      cm_url: "http://localhost:7180"
+      action: set
+      name: "REMOTE_PARCEL_REPO_URLS"
+      value: "{{ cm_new_parcel_urls | join(',') }}"
+
+  - name: Sleep 30 sec
+    pause: seconds=30
+  when: cloudera_cdh_parcel_url not in cm_parcel_url_list
 
 - block:
     - name: Create Cloudera cluster
@@ -46,11 +87,11 @@
   always:
     - name: Show CDH Cluster importation response
       debug: var=cdh_cluster_response
-    - name: Check cdh_response
-      debug: msg="{% if 'Duplicate entry' in cdh_cluster_response.content %} patern found {% else %} patern not found {% endif %}"
 
-#- debug: var=cdh_cluster_response
+    - name: Show CDH Cluster importation response status
+      debug: var=cdh_cluster_response.status
 
-#- name: Delete Cloudera cluster template file
-#  file: path=/tmp/scm.json state=absent
-#  delegate_to: localhost
+- name: Delete Cloudera cluster template file
+  file: path=/tmp/scm.json state=absent
+  delegate_to: localhost
+  tags: cdh-cluster-delete-template

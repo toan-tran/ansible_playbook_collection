@@ -1,0 +1,208 @@
+{
+  "cdhVersion" : "{{ cloudera_version }}",
+  "displayName" : "{{ cloudera_clustername }} ",
+  "cmVersion" : "{{ cloudera_manager_version }}",
+  "products" : [ {
+    "version" : "{{ cloudera_product }}",
+    "product" : "CDH"
+  } ],
+  "services" : [ {
+    "refName" : "zookeeper",
+    "serviceType" : "ZOOKEEPER",
+    "roleConfigGroups" : [ {
+      "refName" : "zookeeper-SERVER-BASE",
+      "roleType" : "SERVER",
+      "base" : true
+    } ]
+  }, {
+    "refName" : "oozie",
+    "serviceType" : "OOZIE",
+    "roleConfigGroups" : [ {
+      "refName" : "oozie-OOZIE_SERVER-BASE",
+      "roleType" : "OOZIE_SERVER",
+      "configs" : [ {
+        "name" : "oozie_database_user",
+        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_user"
+      }, {
+        "name" : "oozie_database_host",
+        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_host"
+      }, {
+        "name" : "oozie_database_type",
+        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_type"
+      }, {
+        "name" : "oozie_database_password",
+        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_password"
+      } ],
+      "base" : true
+    } ]
+  }, {
+    "refName" : "hue",
+    "serviceType" : "HUE",
+    "serviceConfigs" : [ {
+      "name" : "database_password",
+      "variable" : "hue-database_password"
+    }, {
+      "name" : "database_type",
+      "variable" : "hue-database_type"
+    }, {
+      "name" : "database_host",
+      "variable" : "hue-database_host"
+    } ],
+    "roleConfigGroups" : [ {
+      "refName" : "hue-HUE_SERVER-BASE",
+      "roleType" : "HUE_SERVER",
+      "base" : true
+    }, {
+      "refName" : "hue-HUE_LOAD_BALANCER-BASE",
+      "roleType" : "HUE_LOAD_BALANCER",
+      "base" : true
+    } ]
+  }, {
+    "refName" : "spark_on_yarn",
+    "serviceType" : "SPARK_ON_YARN",
+    "roleConfigGroups" : [ {
+      "refName" : "spark_on_yarn-SPARK_YARN_HISTORY_SERVER-BASE",
+      "roleType" : "SPARK_YARN_HISTORY_SERVER",
+      "base" : true
+    }, {
+      "refName" : "spark_on_yarn-GATEWAY-BASE",
+      "roleType" : "GATEWAY",
+      "base" : true
+    } ]
+  }, {
+    "refName" : "hdfs",
+    "serviceType" : "HDFS",
+    "serviceConfigs" : [ {
+      "name" : "dfs_block_size",
+      "value" : "67108864"
+    } ],
+    "roleConfigGroups" : [ {
+      "refName" : "hdfs-NAMENODE-BASE",
+      "roleType" : "NAMENODE",
+      "base" : true
+    }, {
+      "refName" : "hdfs-SECONDARYNAMENODE-BASE",
+      "roleType" : "SECONDARYNAMENODE",
+      "base" : true
+    }, {
+      "refName" : "hdfs-DATANODE-BASE",
+      "roleType" : "DATANODE",
+      "base" : true
+    }, {
+      "refName" : "hdfs-BALANCER-BASE",
+      "roleType" : "BALANCER",
+      "base" : true
+    }, {
+      "refName" : "hdfs-HTTPFS-BASE",
+      "roleType" : "HTTPFS",
+      "base" : true
+    } ]
+  }, {
+    "refName" : "yarn",
+    "serviceType" : "YARN",
+    "roleConfigGroups" : [ {
+      "refName" : "yarn-RESOURCEMANAGER-BASE",
+      "roleType" : "RESOURCEMANAGER",
+      "base" : true
+    }, {
+      "refName" : "yarn-NODEMANAGER-BASE",
+      "roleType" : "NODEMANAGER",
+      "base" : true
+    }, {
+      "refName" : "yarn-JOBHISTORY-BASE",
+      "roleType" : "JOBHISTORY",
+      "base" : true
+    } ]
+  }, {
+    "refName" : "hive",
+    "serviceType" : "HIVE",
+    "serviceConfigs" : [ {
+      "name" : "hive_metastore_database_password",
+      "variable" : "hive-hive_metastore_database_password"
+    }, {
+      "name" : "hive_metastore_database_host",
+      "variable" : "hive-hive_metastore_database_host"
+    }, {
+      "name" : "hive_metastore_database_name",
+      "variable" : "hive-hive_metastore_database_name"
+    } ],
+    "roleConfigGroups" : [ {
+      "refName" : "hive-GATEWAY-BASE",
+      "roleType" : "GATEWAY",
+      "base" : true
+    }, {
+      "refName" : "hive-HIVESERVER2-BASE",
+      "roleType" : "HIVESERVER2",
+      "base" : true
+    }, {
+      "refName" : "hive-HIVEMETASTORE-BASE",
+      "roleType" : "HIVEMETASTORE",
+      "base" : true
+    } ]
+  } ],
+  "hostTemplates" : [ {
+    "refName" : "HostTemplate-Master1",
+    "cardinality" : 1,
+    "roleConfigGroupsRefNames" : [ "hdfs-BALANCER-BASE", "hdfs-HTTPFS-BASE", "hdfs-NAMENODE-BASE", "hive-GATEWAY-BASE", "hue-HUE_LOAD_BALANCER-BASE", "hue-HUE_SERVER-BASE", "oozie-OOZIE_SERVER-BASE", "spark_on_yarn-GATEWAY-BASE", "yarn-JOBHISTORY-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE", "hdfs-DATANODE-BASE", "yarn-NODEMANAGER-BASE" ]
+  }, {
+    "refName" : "HostTemplate-Master2",
+    "cardinality" : 1,
+    "roleConfigGroupsRefNames" : [ "hdfs-HTTPFS-BASE", "hdfs-SECONDARYNAMENODE-BASE", "hive-GATEWAY-BASE", "hive-HIVEMETASTORE-BASE", "hive-HIVESERVER2-BASE", "spark_on_yarn-GATEWAY-BASE", "spark_on_yarn-SPARK_YARN_HISTORY_SERVER-BASE", "zookeeper-SERVER-BASE",  "hdfs-DATANODE-BASE", "yarn-NODEMANAGER-BASE" ]
+  }, {
+    "refName" : "HostTemplate-Worker",
+    "cardinality" : {{ groups['cdh-workers'] | length }},
+    "roleConfigGroupsRefNames" : [ "hdfs-DATANODE-BASE", "hive-GATEWAY-BASE", "spark_on_yarn-GATEWAY-BASE", "yarn-NODEMANAGER-BASE", "zookeeper-SERVER-BASE" ]
+  } ],
+  "instantiator" : {
+    "clusterName" : "{{ cloudera_clustername|default('cluster1') }}",
+    "hosts" : [ 
+        {
+            "hostName": "{{ hostvars[groups['cdh-master1'][0]]['fqdn'] | default(hostvars[groups['cdh-master1'][0]]['ansible_fqdn']) }}",
+            "hostTemplateRefName": "HostTemplate-Master1"
+        },
+        {
+            "hostName": "{{ hostvars[groups['cdh-master2'][0]]['fqdn'] | default(hostvars[groups['cdh-master2'][0]]['ansible_fqdn']) }}",
+            "hostTemplateRefName": "HostTemplate-Master2"
+        },
+        {% set wrkj = joiner(",") %}
+        {% for w in groups['cdh-workers'] %}
+        {{ wrkj() }}
+        {
+            "hostName": "{{ hostvars[w]['fqdn']|default(hostvars[w]['ansible_fqdn']) }}",
+            "hostTemplateRefName": "HostTemplate-Worker"
+        }
+        {% endfor %}
+    ],
+    "variables" : [ {
+      "name" : "hive-hive_metastore_database_host",
+      "value" : "{{ hivedb.db_host }}"
+    }, {
+      "name" : "hive-hive_metastore_database_name",
+      "value" : "{{ hivedb.db_name }}"
+    }, {
+      "name" : "hive-hive_metastore_database_password",
+      "value" : "{{ hivedb.db_password }}"
+    }, {
+      "name" : "hue-database_host",
+      "value" : "{{ huedb.db_host }}"
+    }, {
+      "name" : "hue-database_password",
+      "value" : "{{ huedb.db_password }}"
+    }, {
+      "name" : "hue-database_type",
+      "value" : "{{ huedb.db_type }}"
+    }, {
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_host",
+      "value" : "{{ ooziedb.db_host }}"
+    }, {
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password",
+      "value" : "{{ ooziedb.db_password }}"
+    }, {
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type",
+      "value" : "{{ ooziedb.db_type }}"
+    }, {
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_user",
+      "value" : "{{ ooziedb.db_user }}"
+    } ]
+  }
+}

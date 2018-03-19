@@ -1,0 +1,5 @@
+cloudera_clustername: cluster1
+cloudera_version: 5.12.2
+cloudera_product: 5.12.2-1.cdh5.12.2.p0.4
+cloudera_cdh_parcel_url: "http://archive.cloudera.com/cdh5/parcels/5.12.2/"
+cloudera_cluster_template_file: "cluster_1manager_2masters_nworkers.json.j2"
