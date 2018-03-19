@@ -1,0 +1,46 @@
+---
+# Delete database and users on local MySQL server
+
+- name: Install MySQL-python
+  become: yes
+  yum: name={{ item }} state=present
+  with_items:
+    - MySQL-python
+  run_once: true
+  when: ansible_os_family == 'RedHat'
+
+- name: Install python-mysqldb
+  become: yes
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - python-mysqldb
+  run_once: true
+  when: ansible_os_family == 'Debian'
+
+# Many system requires that root user must log in from Unix root account
+# This is configured by using plugin='unix_socket' in mysql.user table
+# for 'root' user
+- name: Delete databases
+  become: yes
+  mysql_db: login_user=root
+            login_password={{ root_password }}
+            login_port={{ mysql_port }}
+            name={{ item.database }}
+            state=absent
+  with_items: "{{ mysql_items | default([]) }}"
+  failed_when: false
+  run_once: true
+  tags: mysql-items
+
+- name: Delete users
+  become: yes
+  mysql_user: login_user=root
+              login_password="{{ root_password }}"
+              login_port={{ mysql_port }}
+              name="{{ item.user }}"
+              host_all=yes
+              state=absent
+  with_items: "{{ mysql_items | default([]) }}"
+  failed_when: false
+  run_once: true
+  tags: mysql-items

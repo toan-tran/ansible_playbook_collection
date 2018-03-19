@@ -1,0 +1,4 @@
+---
+
+- include: clean.yml
+  tags: mysql-clean
