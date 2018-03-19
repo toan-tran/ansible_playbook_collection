@@ -1,0 +1,3 @@
+[submodule "submodules/ansible_module_collection"]
+	path = submodules/ansible_module_collection
+	url = https://bitbucket.agilefabric.carrefour.io/scm/cla/ansible_module_collection.git
