@@ -21,17 +21,20 @@
       "refName" : "oozie-OOZIE_SERVER-BASE",
       "roleType" : "OOZIE_SERVER",
       "configs" : [ {
-        "name" : "oozie_database_user",
-        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_user"
-      }, {
         "name" : "oozie_database_host",
-        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_host"
+        "value" : "{{ ooziedb.db_host }}"
       }, {
-        "name" : "oozie_database_type",
-        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_type"
+        "name" : "oozie_database_name",
+        "value" : "{{ ooziedb.db_name }}"
+      }, {
+        "name" : "oozie_database_user",
+        "value" : "{{ ooziedb.db_user }}"
       }, {
         "name" : "oozie_database_password",
-        "variable" : "oozie-OOZIE_SERVER-BASE-oozie_database_password"
+        "value" : "{{ ooziedb.db_password }}"
+      }, {
+        "name" : "oozie_database_type",
+        "value" : "{{ ooziedb.db_type }}"
       } ],
       "base" : true
     } ]
@@ -39,14 +42,20 @@
     "refName" : "hue",
     "serviceType" : "HUE",
     "serviceConfigs" : [ {
+      "name" : "database_host",
+      "value": "{{ huedb.db_host }}"
+    }, {
+      "name" : "database_name",
+      "value": "{{ huedb.db_name }}"
+    }, {
+      "name" : "database_user",
+      "value": "{{ huedb.db_user }}"
+    }, {
       "name" : "database_password",
-      "variable" : "hue-database_password"
+      "value": "{{ huedb.db_password }}"
     }, {
       "name" : "database_type",
-      "variable" : "hue-database_type"
-    }, {
-      "name" : "database_host",
-      "variable" : "hue-database_host"
+      "value": "{{ huedb.db_type }}"
     } ],
     "roleConfigGroups" : [ {
       "refName" : "hue-HUE_SERVER-BASE",
@@ -117,14 +126,20 @@
     "refName" : "hive",
     "serviceType" : "HIVE",
     "serviceConfigs" : [ {
-      "name" : "hive_metastore_database_password",
-      "variable" : "hive-hive_metastore_database_password"
-    }, {
       "name" : "hive_metastore_database_host",
-      "variable" : "hive-hive_metastore_database_host"
+      "value": "{{ hivedb.db_host }}"
     }, {
       "name" : "hive_metastore_database_name",
-      "variable" : "hive-hive_metastore_database_name"
+      "value": "{{ hivedb.db_name }}"
+    }, {
+      "name" : "hive_metastore_database_user",
+      "value": "{{ hivedb.db_user }}"
+    }, {
+      "name" : "hive_metastore_database_password",
+      "value": "{{ hivedb.db_password }}"
+    }, {
+      "name" : "hive_metastore_database_type",
+      "value": "{{ hivedb.db_type }}"
     } ],
     "roleConfigGroups" : [ {
       "refName" : "hive-GATEWAY-BASE",
@@ -172,37 +187,6 @@
             "hostTemplateRefName": "HostTemplate-Worker"
         }
         {% endfor %}
-    ],
-    "variables" : [ {
-      "name" : "hive-hive_metastore_database_host",
-      "value" : "{{ hivedb.db_host }}"
-    }, {
-      "name" : "hive-hive_metastore_database_name",
-      "value" : "{{ hivedb.db_name }}"
-    }, {
-      "name" : "hive-hive_metastore_database_password",
-      "value" : "{{ hivedb.db_password }}"
-    }, {
-      "name" : "hue-database_host",
-      "value" : "{{ huedb.db_host }}"
-    }, {
-      "name" : "hue-database_password",
-      "value" : "{{ huedb.db_password }}"
-    }, {
-      "name" : "hue-database_type",
-      "value" : "{{ huedb.db_type }}"
-    }, {
-      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_host",
-      "value" : "{{ ooziedb.db_host }}"
-    }, {
-      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password",
-      "value" : "{{ ooziedb.db_password }}"
-    }, {
-      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type",
-      "value" : "{{ ooziedb.db_type }}"
-    }, {
-      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_user",
-      "value" : "{{ ooziedb.db_user }}"
-    } ]
+    ]
   }
 }

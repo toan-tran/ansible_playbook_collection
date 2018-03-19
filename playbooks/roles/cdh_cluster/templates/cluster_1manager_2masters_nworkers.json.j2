@@ -183,34 +183,49 @@
     ],
     "variables" : [ {
       "name" : "hive-hive_metastore_database_host",
-      "value" : "{{hivedb.db_host}}"
+      "value" : "{{ hivedb.db_host }}"
     }, {
       "name" : "hive-hive_metastore_database_name",
-      "value" : "{{hivedb.db_name}}"
+      "value" : "{{ hivedb.db_name }}"
+    }, {
+      "name" : "hive-hive_metastore_database_user",
+      "value" : "{{ hivedb.db_user }}"
     }, {
       "name" : "hive-hive_metastore_database_password",
-      "value" : "{{hivedb.db_password}}"
+      "value" : "{{ hivedb.db_password }}"
+    }, {
+      "name" : "hive-hive_metastore_database_type",
+      "value" : "{{ hivedb.db_type }}"
     }, {
       "name" : "hue-database_host",
-      "value" : "{{huedb.db_host}}"
+      "value" : "{{ huedb.db_host }}"
+    }, {
+      "name" : "hue-database_name",
+      "value" : "{{ huedb.db_name }}"
+    }, {
+      "name" : "hue-database_user",
+      "value" : "{{ huedb.db_user }}"
     }, {
       "name" : "hue-database_password",
-      "value" : "{{huedb.db_password}}"
+      "value" : "{{ huedb.db_password }}"
     }, {
       "name" : "hue-database_type",
-      "value" : "{{huedb.db_type}}"
+      "value" : "{{ huedb.db_type }}"
     }, {
       "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_host",
-      "value" : "{{ooziedb.db_host}}"
+      "value" : "{{ ooziedb.db_host }}"
     }, {
-      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password",
-      "value" : "{{ooziedb.db_password}}"
-    }, {
-      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type",
-      "value" : "{{ooziedb.db_type}}"
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_name",
+      "value" : "{{ ooziedb.db_name }}"
     }, {
       "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_user",
-      "value" : "{{ooziedb.db_user}}"
+      "value" : "{{ ooziedb.db_user }}"
+    }, {
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password",
+      "value" : "{{ ooziedb.db_password }}"
+    }, {
+      "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type",
+      "value" : "{{ ooziedb.db_type }}"
     } ]
   }
 }
