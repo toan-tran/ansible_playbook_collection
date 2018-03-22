@@ -1,14 +1,4 @@
 ---
-# Add Official EPEL Repository to CentOS
 
-- name: Get EPEL Key
-  become: yes
-  get_url: url="https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ansible_distribution_major_version}}" dest=/etc/pki/rpm-gpg/
-
-- name: Add EPEL Repository
-  become: yes
-  template: src=epel.repo.j2 dest=/etc/yum.repos.d/epel.repo
-
-- name: Clean all YUM
-  become: yes
-  shell: "yum clean all"
+- include: epel.yml
+  when: ansible_os_family == 'RedHat'
